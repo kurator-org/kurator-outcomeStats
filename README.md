@@ -3,7 +3,7 @@ This python app produces naive statistics from JSON produced by FP-Akka. The int
 
 The article at http://bdj.pensoft.net/articles.php?id=992 offers a small DwCa archive with only 12 occurrences, with minor quality control issues.
 
-Files:
+<h3>Files:</h3>
 -outcomeStats.py The application <br/>
 -combined.xlsx  output of the application <br/>
 -occurrences_922.zip The DwCa <br/>
