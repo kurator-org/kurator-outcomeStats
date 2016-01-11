@@ -5,9 +5,14 @@ import xlsxwriter
 
 validators=("ScientificNameValidator","DateValidator",  "GeoRefValidator",
             "BasisOfRecordValidator") #row order in output
+maxlength= max(len(s) for s in validators)
+
 
 outcomes= ("CORRECT","CURATED","FILLED_IN", "UNABLE_DETERMINE_VALIDITY",  "UNABLE_CURATE") #col order in output
-
+max1= max(len(s) for s in validators)
+max2= max(len(t) for t in outcomes)
+maxlength = max(max1,max2)
+print(maxlength)
 #TODO: load above from a config file but default to these
 
 ###initializations
@@ -125,6 +130,7 @@ outfile="combined.xlsx"
 workbook = xlsxwriter.Workbook(outfile)
 formats=initFormats(workbook)
 worksheet = workbook.add_worksheet()
+worksheet.set_column(0,len(outcomes), maxlength)
 stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
 stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
 workbook.close()
