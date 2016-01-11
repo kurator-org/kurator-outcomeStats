@@ -16,11 +16,7 @@ To execute, start python3, and execute
 ```
 exec(open("outcomeStats.py").read())
 ```
-The result executes the unit test beginning at line 115
-
-NOTE: The file combined.xslx in this repository was hand-edited to make the column widths optimal. The actual output should have no other differences from what the app produces. This was done because the xlsxwriter package inherantly cannot process this other that by a hack described in Issue #1
-
-
+The result executes the unit test beginning at line 120
 
 
 More to come soon...
