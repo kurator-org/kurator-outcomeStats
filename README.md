@@ -4,12 +4,14 @@ This python app produces naive statistics from JSON produced by FP-Akka. The int
 The app is based on the [xlsxWriter package](http://xlsxwriter.readthedocs.org/#)
 
 The [journal article](http://bdj.pensoft.net/articles.php?id=992) offers a small DwCa archive with only 12 occurrences, with minor quality control issues.
+###Directories
 
 ###Files:
-* outcomeStats.py The application <br/>
-* combined.xlsx  output of the application <br/>
-* occurrences_922.zip The DwCa <br/>
-* occurrence_qc.json output of FP-Akka 1.5.2 (?), input to the application <br/>
+In kurator-outcomeStats/org/kurator/outcomestats
+** outcomestats.py The application package<br/>
+** statstest.py  Produces example named combined.xlsx
+** occurrence_qc.json output of FP-Akka 1.5.2 (?), input to the invocation in statstest<br/>
+* occurrences_922.zip The DwCa from which FP-Akka produced occurrence_qc.json ---to be supplied<br/>
 * postprocessor output spreadsheet --- to be supplied<br/>
 
 To execute, start python3, and execute

@@ -15,11 +15,11 @@ maxlength= max(len(s) for s in validators)
 
 # outcomes= ("CORRECT","CURATED","FILLED_IN", "UNABLE_DETERMINE_VALIDITY",  "UNABLE_CURATE") #col order in output
 outcomes = eval(config['DEFAULT']['outcomes'])
-print(outcomes)
+#print(outcomes)
 max1= max(len(s) for s in validators)
 max2= max(len(t) for t in outcomes)
 maxlength = max(max1,max2)
-print(maxlength)
+#print(maxlength)
 #TODO: load above from a config file but default to these
 
 ###initializations
@@ -109,7 +109,7 @@ def stats2XLSX(workbook, worksheet, formats, stats, origin, outcomes, validators
    bold = workbook.add_format({'bold': True})
 #   print("stats=",stats)
 #   print("outcomes=", outcomes)
-   print(origin)
+#   print(origin)
    worksheet.write(origin[0],origin[1],"Validator",bold)
    for str in outcomes :
       col=1+origin[1]+outcomes.index(str) #insure order is as in outcomes list
