@@ -1,0 +1,9 @@
+.classpath
+.project
+.pydevproject
+.settings
+target
+.DS_Store
+*.class
+*.pyc
+*~
