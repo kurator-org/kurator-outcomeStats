@@ -1,5 +1,0 @@
-https://github.com/kurator-org/kurator-validation/tree/master/src/main/python/org/kurator/validation/actors/dwca
-
-https://opensource.ncsa.illinois.edu/confluence/display/KURATOR/Kurator-Akka+Tutorial
-
-https://github.com/yesworkflow-org/
