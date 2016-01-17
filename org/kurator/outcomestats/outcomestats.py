@@ -45,8 +45,8 @@ def updateValidatorStats(fpa, stats, record)  :
             stats[stats_k][data_v] += 1
    return stats
 
-
-def createStats(fpa, normalize:bool):
+#typed parameter requires python3
+def createStats(fpa, normalize: bool):
    validatorStats = initValidatorStats(validators, outcomes)
    for record in range(len(fpa)):
       updateValidatorStats(fpa, validatorStats, record) 

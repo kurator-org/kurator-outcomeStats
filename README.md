@@ -4,6 +4,9 @@ This python app produces naive statistics from JSON produced by FP-Akka. The int
 The app is based on the [xlsxWriter package](http://xlsxwriter.readthedocs.org/#)
 
 The [journal article](http://bdj.pensoft.net/articles.php?id=992) offers a small DwCa archive with only 12 occurrences, with minor quality control issues.
+##Prerequisites
+* XlsWriter  See http://xlsxwriter.readthedocs.org/getting_started.html#installing-xlsxwriter.
+* Python3 for now. (mainly because some function parameters are typed)
 ###Directories
 
 ###Files:
