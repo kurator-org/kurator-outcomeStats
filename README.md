@@ -17,9 +17,9 @@ In kurator-outcomeStats/org/kurator/outcomestats
 * occurrences_922.zip The DwCa from which FP-Akka produced occurrence_qc.json ---to be supplied<br/>
 * postprocessor output spreadsheet --- to be supplied<br/>
 
-To execute, start python3, and execute
+To execute test
 ```
-exec(open("outcomeStats.py").read())
+python3 statstest.py
 ```
 
 
