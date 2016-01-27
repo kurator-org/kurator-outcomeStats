@@ -21,15 +21,20 @@ if __name__=="__main__":
    with open(args.i) as data_file:
          fpAkkaOutput=json.load(data_file)
    normalized = True
-   validatorStats =           createStats(fpAkkaOutput, ~normalized)
-   validatorStatsNormalized = createStats(fpAkkaOutput, normalized)
    origin1 = [0,0]
    origin2 = [5,0]
    outfile = args.o
    workbook = xlsxwriter.Workbook(args.o)
-   formats=initFormats(workbook)
    worksheet = workbook.add_worksheet()
    worksheet.set_column(0,len(outcomes), 3+maxlength)
-   stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
-   stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
+#   print("args=", args)
+   configFile= 'stats.ini'
+   stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
+   formats=stats.initFormats(workbook) #shouldn't be attr of main class
+
+   validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
+   validatorStatsNormalized = stats.createStats(fpAkkaOutput, normalized)
+
+   stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
+   stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
    workbook.close()
