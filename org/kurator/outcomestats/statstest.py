@@ -26,15 +26,17 @@ if __name__=="__main__":
    outfile = args.o
    workbook = xlsxwriter.Workbook(args.o)
    worksheet = workbook.add_worksheet()
-   worksheet.set_column(0,len(outcomes), 3+maxlength)
+#   worksheet.set_column(0,len(outcomes), 3+maxlength)
 #   print("args=", args)
    configFile= 'stats.ini'
    stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
+   worksheet.set_column(0,len(stats.getOutcomes()), 3+stats.getMaxLength())
    formats=stats.initFormats(workbook) #shouldn't be attr of main class
 
    validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
    validatorStatsNormalized = stats.createStats(fpAkkaOutput, normalized)
-
+   outcomes = stats.getOutcomes()
+   validators = stats.getValidators()
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
    workbook.close()

@@ -1,28 +1,7 @@
 import json
 import xlsxwriter
 import configparser
-#exec(open("outcomeStats.py").read()) to load
 
-config = configparser.ConfigParser()
-config.sections()
-config.read('stats.ini')
-
-#validators=("ScientificNameValidator","DateValidator",  "GeoRefValidator",
-#            "BasisOfRecordValidator") #row order in output
-validators =eval( config['DEFAULT']['validators'])
-maxlength= max(len(s) for s in validators)
-
-
-# outcomes= ("CORRECT","CURATED","FILLED_IN", "UNABLE_DETERMINE_VALIDITY",  "UNABLE_CURATE") #col order in output
-outcomes = eval(config['DEFAULT']['outcomes'])
-#print(outcomes)
-max1= max(len(s) for s in validators)
-max2= max(len(t) for t in outcomes)
-maxlength = max(max1,max2)
-#print(maxlength)
-#TODO: load above from a config file but default to these
-
-###initializations
 class OutcomeStats:
    def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
       config = configparser.ConfigParser()
@@ -41,7 +20,14 @@ class OutcomeStats:
       with open(infile) as data_file:
          self.fpa=json.load(data_file)
       self.numRecords = len(self.fpa)
-   
+
+   def getOutcomes(self) :
+      return self.outcomes
+   def getValidators(self) :
+      return self.validators
+   def getMaxLength(self):
+      return self.maxlength
+
    def initStats(self,outcomes) :
       stats = {}
       for outcome in outcomes:
