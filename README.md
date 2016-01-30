@@ -11,8 +11,10 @@ The [journal article](http://bdj.pensoft.net/articles.php?id=992) offers a small
 
 ###Files:
 In kurator-outcomeStats/org/kurator/outcomestats
-* outcomestats.py The application package<br/>
-* statstest.py  Produces example named combined.xlsx<br/>
+* OutcomeStats.py The application package<br/>
+* OutcomeFormats.py Set default cell formats based on postprocessor outputs
+* stats.ini  Default validators and outcomes
+* statstest.py  Produces example named outcomeStats.xlsx<br/>
 * occurrence_qc.json output of FP-Akka 1.5.2 (?), input to the invocation in statstest<br/>
 * occurrences_922.zip The DwCa from which FP-Akka produced occurrence_qc.json ---to be supplied<br/>
 * postprocessor output spreadsheet --- to be supplied<br/>
