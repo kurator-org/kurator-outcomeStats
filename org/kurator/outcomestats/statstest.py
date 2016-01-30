@@ -4,13 +4,16 @@
 import json
 import sys
 import xlsxwriter
-from outcomestats import *
+#import OutcomeFormats
+from OutcomeStats import *
+from OutcomeFormats import *
 import argparse
 #import unittest
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--i',default='occurrence_qc.json', help="Defaults to occurrence_qc.json if '--i' absent")
 parser.add_argument('--o',default='outcomeStats.xlsx', help="Defaults to outcomeStats.xlsx if '--o' absent")
+parser.add_argument('--c',default='stats.ini', help="Defaults to stats.ini if --c absent")
 args = parser.parse_args()
 #outfile = args.o
 #args = parser.parse_args()
@@ -26,16 +29,16 @@ if __name__=="__main__":
    outfile = args.o
    workbook = xlsxwriter.Workbook(args.o)
    worksheet = workbook.add_worksheet()
-#   worksheet.set_column(0,len(outcomes), 3+maxlength)
-#   print("args=", args)
    configFile= 'stats.ini'
    stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
    worksheet.set_column(0,len(stats.getOutcomes()), 3+stats.getMaxLength())
-   formats=stats.initFormats(workbook) #shouldn't be attr of main class
-
+   print(stats.getOutcomes())
+   outcomeFormats = OutcomeFormats({})
+   formats = outcomeFormats.initFormats(workbook) #shouldn't be attr of main class
    validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
    validatorStatsNormalized = stats.createStats(fpAkkaOutput, normalized)
    outcomes = stats.getOutcomes()
+   print(outcomes)
    validators = stats.getValidators()
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
