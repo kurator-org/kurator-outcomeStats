@@ -32,13 +32,13 @@ if __name__=="__main__":
    configFile= 'stats.ini'
    stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
    worksheet.set_column(0,len(stats.getOutcomes()), 3+stats.getMaxLength())
-   print(stats.getOutcomes())
+#   print(stats.getOutcomes())
    outcomeFormats = OutcomeFormats({})
    formats = outcomeFormats.initFormats(workbook) #shouldn't be attr of main class
    validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
    validatorStatsNormalized = stats.createStats(fpAkkaOutput, normalized)
    outcomes = stats.getOutcomes()
-   print(outcomes)
+#   print("outcomes=", outcomes)
    validators = stats.getValidators()
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
