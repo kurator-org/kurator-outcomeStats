@@ -27,3 +27,5 @@ class OutcomeFormats:
       formatXFill=''
       self.formats={'UNABLE_DETERMINE_VALIDITY':formatGryFill, 'CURATED':formatYelFill, 'UNABLE_CURATE':formatRedFill, 'CORRECT':formatGrnFill, 'FILLED_IN':formatMusFill}
       return self.formats
+
+   
