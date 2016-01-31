@@ -2,6 +2,8 @@ import json
 import sys
 import xlsxwriter
 class OutcomeFormats:
+   """Class supporting xlsx cell formats for a set of Kurator Quality Control *outcomes*
+   """
    def __init__(self, outcomes):
       self.outcomes = outcomes
       
