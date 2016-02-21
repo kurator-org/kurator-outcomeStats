@@ -1,14 +1,19 @@
 import json
 import xlsxwriter
 import configparser
+import Args
 
 class OutcomeStats:
-   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
+  # def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
+   def __init__(self, workbook, worksheet,args, origin1, origin2):
+      with open(args.getInfile()) as data_file:
+                 fpAkkOutput=json.load(data_file)
       config = configparser.ConfigParser()
       config.sections()
-      self.configFile =configFile
+#      self.configFile =configFile
+      self.configFile = args.getConfigfile()
 #      self.configFile='stats.ini'
-      config.read(configFile)
+      config.read(self.configFile)
       self.validators =eval( config['DEFAULT']['validators'])
       self.maxlength= max(len(s) for s in self.validators)
       self.outcomes = eval(config['DEFAULT']['outcomes'])
@@ -115,3 +120,18 @@ class OutcomeStats:
             col=1+outcomes.index(outcome) #put cols in order of the outcomes list
             worksheet.write(row, col, statval,formats.get(outcome))
    
+def main():
+   from Args import Args
+   print("OutcomeStats.main()")
+#   print(type(self.outcomeFormats()))
+   args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
+   workbook = xlsxwriter.Workbook(args.getOutfile())
+   worksheet = workbook.add_worksheet()
+   origin1 = [0,0]
+   origin2 = [5,0]
+
+   stats=OutcomeStats(workbook, worksheet,args, origin1, origin2)
+
+if __name__ == "__main__" :
+   print("hello")
+   main()

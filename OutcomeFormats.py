@@ -1,15 +1,42 @@
-#> python3 statstest.py
-#default input: occcurrence_qc.json
-#default output: combined.xlsx
 import json
 import sys
 import xlsxwriter
-#import OutcomeFormats
-from OutcomeStats import *
-from OutcomeFormats import *
 import argparse
-#import unittest
+from OutcomeStats import *
+class OutcomeFormats:
+   """Class supporting xlsx cell formats for a set of Kurator Quality Control *outcomes*
+   """
+   def __init__(self, outcomes):
+      self.outcomes = outcomes
+      
+   def getFormats(self):
+      return formats
 
+   def setFormats(self, formats):
+      return {}
+   
+   def initFormats(self, workbook):
+      formatGrnFill=workbook.add_format()
+      formatRedFill=workbook.add_format()
+      formatYelFill=workbook.add_format()
+      formatMusFill=workbook.add_format()
+      formatGryFill=workbook.add_format()
+      formatGrnFill.set_bg_color('#00FF00') #lite green
+      formatRedFill.set_bg_color('#FF0000')
+      formatMusFill.set_bg_color('#DDDD00') #mustard
+      formatYelFill.set_bg_color('#FFFF00')
+      formatGryFill.set_bg_color('#888888')
+      formatXFill=''
+      self.formats={'UNABLE_DETERMINE_VALIDITY':formatGryFill, 'CURATED':formatYelFill, 'UNABLE_CURATE':formatRedFill, 'CORRECT':formatGrnFill, 'FILLED_IN':formatMusFill}
+      return self.formats
+
+def main():
+   print("OutcomeFormats.main()")
+#   print(type(self.outcomeFormats()))
+
+if __name__ == "__main__" :
+   print("hello")
+   main()
 parser = argparse.ArgumentParser()
 parser.add_argument('--i',default='occurrence_qc.json', help="Defaults to occurrence_qc.json if '--i' absent")
 parser.add_argument('--o',default='outcomeStats.xlsx', help="Defaults to outcomeStats.xlsx if '--o' absent")
@@ -32,7 +59,7 @@ if __name__=="__main__":
    configFile= 'stats.ini'
    stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
    worksheet.set_column(0,len(stats.getOutcomes()), 3+stats.getMaxLength())
-#   print(stats.getOutcomes())
+   print(stats.getOutcomes())
    outcomeFormats = OutcomeFormats({})
    formats = outcomeFormats.initFormats(workbook) #shouldn't be attr of main class
    validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
@@ -43,3 +70,5 @@ if __name__=="__main__":
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
    workbook.close()
+
+   
