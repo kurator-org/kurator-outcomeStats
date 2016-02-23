@@ -4,8 +4,9 @@ import configparser
 import Args
 
 class OutcomeStats:
-  # def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
+#   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
    def __init__(self, workbook, worksheet,args, origin1, origin2):
+
       with open(args.getInfile()) as data_file:
                  fpAkkOutput=json.load(data_file)
       config = configparser.ConfigParser()

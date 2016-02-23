@@ -18,10 +18,11 @@ import argparse
 #args = parser.parse_args()
 #outfile = args.o
 #args = parser.parse_args()
-args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
+#args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
 #Supply your favorite JSON output of FP-Akka as input. Do python3 statstest.py --help for help
 #tested against FP-Akka 1.5.2 JSON output with python3
 if __name__=="__main__":
+   args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
    with open(args.getInfile()) as data_file:
          fpAkkaOutput=json.load(data_file)
    normalized = True
@@ -40,7 +41,7 @@ if __name__=="__main__":
    validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
    validatorStatsNormalized = stats.createStats(fpAkkaOutput, normalized)
    outcomes = stats.getOutcomes()
-#   print("outcomes=", outcomes)
+   print("outcomes=", outcomes)
    validators = stats.getValidators()
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
