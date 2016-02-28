@@ -8,7 +8,7 @@ class OutcomeStats:
    def __init__(self, workbook, worksheet,args, origin1, origin2):
 
       with open(args.getInfile()) as data_file:
-                 fpAkkOutput=json.load(data_file)
+                 self.fpAkkaOutput=json.load(data_file)
       config = configparser.ConfigParser()
       config.sections()
 #      self.configFile =configFile
@@ -21,11 +21,11 @@ class OutcomeStats:
       self.max1= max(len(s) for s in self.validators)
       self.max2= max(len(t) for t in self.outcomes)
       self.maxlength = max(self.max1,self.max2)
-      self.fpa = {}
-      infile = 'occurrence_qc.json' #for now
-      with open(infile) as data_file:
-         self.fpa=json.load(data_file)
-      self.numRecords = len(self.fpa)
+    #  self.fpa = {}
+    #  infile = 'occurrence_qc.json' #for now
+    #  with open(infile) as data_file:
+    #     self.fpa=json.load(data_file)
+      self.numRecords = len(self.fpAkkaOutput)
 
    def getOutcomes(self) :
       return self.outcomes
@@ -102,7 +102,7 @@ class OutcomeStats:
    #doesn't belong in this class
    
    def stats2XLSX(self, workbook, worksheet, formats, stats, origin, outcomes, validators):
-   #   print("fmts=",formats)
+#      print("fmts=",type(formats))
       bold = workbook.add_format({'bold': True})
    #   print("stats=",stats)
    #   print("outcomes=", outcomes)
@@ -119,12 +119,16 @@ class OutcomeStats:
          #write data for each validator in its own row
          for outcome, statval in v.items():
             col=1+outcomes.index(outcome) #put cols in order of the outcomes list
-            worksheet.write(row, col, statval,formats.get(outcome))
+  #          print("formats type=", type(formats))
+            format = formats.get(outcome)
+            print("format=",format, " type=",type(format)) #gives a class, want an instance
+#            worksheet.write(row, col, statval,formats.get(outcome))
+#            format = format.getFormat(outcome)
+            worksheet.write(row, col, statval, format)
    
 def main():
    from Args import Args
    print("OutcomeStats.main()")
-#   print(type(self.outcomeFormats()))
    args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
    workbook = xlsxwriter.Workbook(args.getOutfile())
    worksheet = workbook.add_worksheet()
