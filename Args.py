@@ -10,7 +10,18 @@ class Args :
       self.infile = infile
       self.outfile = outfile
       self.configFile = configFile
-      
+      parser = argparse.ArgumentParser()   #python 2.7 and 3 default Dict to OrderedDict 
+      #parser.sections()
+      self.configFile = configFile
+      parser.read(configFile)
+      self.outcome_colors_dict = eval(parser['DEFAULT']['outcome_colors'])  #assumes outcome_colors in the order of columns desired
+      self.formats= {}
+      for outcome, color in self.outcome_colors.items():
+           self.formats[outcome] = workbook.add_format()
+           self.formats[outcome].set_bg_color(color)
+      self.typography=workbook.add_format({'bold': True})
+
+ 
    def getArgs(self):
       return self.args
 

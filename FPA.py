@@ -1,23 +1,30 @@
 import json
 import xlsxwriter
 import configparser
+import os
+from ConfigRAM import ConfigRAM
 
-
-class OutcomeStats:
+class FPA:
 #   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
-   def __init__(self, workbook, worksheet,args, origin1, origin2):
-
-      with open(args.getInfile()) as data_file:
+   def __init__(self, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2):
+#   def __init__(self, config):  #config is a filled ConfigRAM object
+      self.workbook = workbook
+      self.dataFileName = dataFileName
+      self.validators = validators
+      self.origin1 = origin1
+      self.origin2 = origin2
+      self.outcome_colors = outcome_colors # a dict
+#      self.dataFileName = '/home/ram/git/kurator-outcomeStats/occurrence_qc.json' #######
+#      self.dataFileName = os.getcwd()+'/'+dataFileName
+      print(type(dataFileName))
+#      self.data=open(dataFileName, encoding='utf-8')
+      print("os ", self.dataFileName )
+      self.outcomes = outcomes
+      with open(self.dataFileName) as data_file:   ############## could be a stream???
                  self.fpAkkaOutput=json.load(data_file)
-      config = configparser.ConfigParser()
-      config.sections()
-#      self.configFile =configFile
-      self.configFile = args.getConfigfile()
-#      self.configFile='stats.ini'
-      config.read(self.configFile)
-      self.validators =eval( config['DEFAULT']['validators'])
+
+
       self.maxlength= max(len(s) for s in self.validators)
-      self.outcomes = eval(config['DEFAULT']['outcomes'])
       self.max1= max(len(s) for s in self.validators)
       self.max2= max(len(t) for t in self.outcomes)
       self.maxlength = max(self.max1,self.max2)
@@ -33,7 +40,11 @@ class OutcomeStats:
       return self.validators
    def getMaxLength(self):
       return self.maxlength
-
+   def getOutcomeColors(self) :
+      return self.outcome_colors
+   def getNumRecords(self):
+      return self.numRecords
+   
    def initStats(self,outcomes) :
       stats = {}
       for outcome in outcomes:
@@ -128,26 +139,57 @@ class OutcomeStats:
 #            format = format.getFormat(outcome)
             worksheet.write(row, col, statval, format)
    
-def main():
-
-
-
-
-   print("OutcomeStats.main()")
+def foo():
+   import pprint
+   from ConfigRAM import ConfigRAM
+   print("FPA.main()")
 #   args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
    
-   workbook = xlsxwriter.Workbook(args.getOutfile())
-   worksheet = workbook.add_worksheet()
+ #  workbook = xlsxwriter.Workbook(args.getOutfile())
+ #  worksheet = workbook.add_worksheet()
+   configFile = 'stats.ini'
    origin1 = [0,0]
    origin2 = [5,0]
-
-   formats = OutcomeFormats('stats.ini', workbook)
+   config = ConfigRAM(configFile)
+   workbook = config.getWorkbook()
+   worksheet =  config.getWorksheet()
+   dataFileName = config.getData()
+   #dataFileName = 'occurrence_qc.json'
+   print(dataFileName)
+#   fpa = FPA(workbook, worksheet,dataFileName, origin1, origin2)
+   fpa = FPA(config)
+   
+# def __init__(self, workbook, worksheet,dataFileName, origin1, origin2):
+   #formats = OutcomeFormats('stats.ini', workbook)
    print("formats.colors=",formats.getOutcomeColors())
    stats=OutcomeStats(workbook, worksheet,args, origin1, origin2)
    outcomes = stats.getOutcomes()
    validators = stats.getValidators()
    xx = stats2XLSX(workbook, worksheet, formats, stats, origin[1], outcomes, validators)
    print("stats=", stats)
+   
+def main():
+   import pprint
+   import xlsxwriter
+   configFile = 'stats.ini'
+   config = ConfigRAM(configFile)
+   origin1 = [0,0]
+   origin2 = [5,0]
+
+   workbook = config.getWorkbook()
+   worksheet = config.getWorksheet()
+   dataFileName = config.getDataFileName()
+   validators = config.getValidators()
+   outcomes = config.getOutcomes()
+   outcome_colors = config.getOutcomeColors()
+  # print(dataFileName,configFile, workbook,worksheet)
+   #print(validators)
+   #print(outcomes)
+   #print(outcome_colors)
+   fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
+   
+  # print("fpa=", fpa.getValidators(), fpa.getOutcomes(), fpa.getOutcomeColors())
+   print("numRecs=",fpa.getNumRecords())
 if __name__ == "__main__" :
    print("hello")
    main()

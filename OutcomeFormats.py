@@ -58,7 +58,7 @@ class OutcomeFormats:
 
 def main():
    print("OutcomeFormats.main()")
-   import statstest
+#   import statstest
    exec(open("statstest.py").read())
 if __name__ == "__main__" :
    main()
