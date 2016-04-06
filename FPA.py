@@ -16,9 +16,8 @@ class FPA:
       self.outcome_colors = outcome_colors # a dict
 #      self.dataFileName = '/home/ram/git/kurator-outcomeStats/occurrence_qc.json' #######
 #      self.dataFileName = os.getcwd()+'/'+dataFileName
-      print(type(dataFileName))
 #      self.data=open(dataFileName, encoding='utf-8')
-      print("os ", self.dataFileName )
+      print("dataFileName=",self.dataFileName, "type=", type(self.dataFileName))
       self.outcomes = outcomes
       with open(self.dataFileName) as data_file:   ############## could be a stream???
                  self.fpAkkaOutput=json.load(data_file)
@@ -139,34 +138,6 @@ class FPA:
 #            format = format.getFormat(outcome)
             worksheet.write(row, col, statval, format)
    
-def foo():
-   import pprint
-   from ConfigRAM import ConfigRAM
-   print("FPA.main()")
-#   args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
-   
- #  workbook = xlsxwriter.Workbook(args.getOutfile())
- #  worksheet = workbook.add_worksheet()
-   configFile = 'stats.ini'
-   origin1 = [0,0]
-   origin2 = [5,0]
-   config = ConfigRAM(configFile)
-   workbook = config.getWorkbook()
-   worksheet =  config.getWorksheet()
-   dataFileName = config.getData()
-   #dataFileName = 'occurrence_qc.json'
-   print(dataFileName)
-#   fpa = FPA(workbook, worksheet,dataFileName, origin1, origin2)
-   fpa = FPA(config)
-   
-# def __init__(self, workbook, worksheet,dataFileName, origin1, origin2):
-   #formats = OutcomeFormats('stats.ini', workbook)
-   print("formats.colors=",formats.getOutcomeColors())
-   stats=OutcomeStats(workbook, worksheet,args, origin1, origin2)
-   outcomes = stats.getOutcomes()
-   validators = stats.getValidators()
-   xx = stats2XLSX(workbook, worksheet, formats, stats, origin[1], outcomes, validators)
-   print("stats=", stats)
    
 def main():
    import pprint

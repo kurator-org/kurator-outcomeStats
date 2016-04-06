@@ -5,8 +5,6 @@ class ConfigRAM :
 #    def __init__(self, configFile):
     def __init__(self, configFile):
         self.configFile = configFile
-#        self.workbook = workbook
-#        self.worksheet = worksheet
         self.config = configparser.ConfigParser()
         self.config.sections()
         xx=self.config.read(self.configFile)
@@ -15,11 +13,12 @@ class ConfigRAM :
         self.outcomes = self.config.get('DEFAULT', 'outcomes')
         self.outcome_colors = ast.literal_eval(self.config.get('DEFAULT','outcome_colors'))
  #       print(type(self.outcome_colors))
-        self.workbookName= ast.literal_eval(self.config.get('DEFAULT', 'workbookName'))
+#        self.workbookName= ast.literal_eval(self.config.get('DEFAULT', 'workbookName'))
+        self.workbookName= self.config.get('DEFAULT', 'workbookName')
         self.workbook = xlsxwriter.Workbook(self.workbookName)
 #        print(self.workbook, "type(self.workbook=", type(self.workbook))
         self.dataFileName = self.config.get('DEFAULT', 'data')
-        print("dfN=", self.dataFileName, "dfNType=", type(self.dataFileName))
+        print("config dfN=", self.dataFileName, "dfNType=", type(self.dataFileName))
         self.formats= {}
         for outcome, color in self.outcome_colors.items():
             self.formats[outcome] =self.workbook.add_format()
@@ -40,6 +39,8 @@ class ConfigRAM :
 
     def getWorkbook(self): #name or object? do we care which?  #full pathname or local?
         return(self.workbook)
+    def getWorkbookName(self): #name or object? do we care which?  #full pathname or local?
+        return(self.workbookName)
     
 
     def getWorksheet(self):
