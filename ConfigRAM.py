@@ -2,7 +2,6 @@ import xlsxwriter
 import configparser
 import ast
 class ConfigRAM :
-#    def __init__(self, configFile):
     def __init__(self, configFile):
         self.configFile = configFile
         self.config = configparser.ConfigParser()
@@ -19,12 +18,12 @@ class ConfigRAM :
 #        print(self.workbook, "type(self.workbook=", type(self.workbook))
         self.dataFileName = self.config.get('DEFAULT', 'data')
         print("config dfN=", self.dataFileName, "dfNType=", type(self.dataFileName))
-        self.formats= {}
-        for outcome, color in self.outcome_colors.items():
-            self.formats[outcome] =self.workbook.add_format()
-            self.formats[outcome].set_bg_color(color)
-        self.worksheet = self.workbook.add_worksheet()
-      #  self.typography=self.workbook.add_format({'bold': True})
+#        self.formats= {}
+#        for outcome, color in self.outcome_colors.items():
+#            self.formats[outcome] =self.workbook.add_format()
+#            self.formats[outcome].set_bg_color(color)
+        self.worksheet = self.workbook.add_worksheet() ### create here?
+####      #  self.typography=self.workbook.add_format({'bold': True})
 
 
     def getValidators(self): #should return a tuple of validator names

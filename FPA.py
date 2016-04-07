@@ -22,6 +22,11 @@ class FPA:
       with open(self.dataFileName) as data_file:   ############## could be a stream???
                  self.fpAkkaOutput=json.load(data_file)
 
+      self.formats= {}
+      for outcome, color in self.outcome_colors.items():
+         self.formats[outcome] =self.workbook.add_format()
+         self.formats[outcome].set_bg_color(color)
+ #     self.worksheet = self.workbook.add_worksheet()  #set in ConfigRAM
 
       self.maxlength= max(len(s) for s in self.validators)
       self.max1= max(len(s) for s in self.validators)
@@ -43,6 +48,8 @@ class FPA:
       return self.outcome_colors
    def getNumRecords(self):
       return self.numRecords
+   def getFormats(self):
+      return self.formats
    
    def initStats(self,outcomes) :
       stats = {}
@@ -161,6 +168,7 @@ def main():
    
   # print("fpa=", fpa.getValidators(), fpa.getOutcomes(), fpa.getOutcomeColors())
    print("numRecs=",fpa.getNumRecords())
+   print("formats=", fpa.getFormats())
 if __name__ == "__main__" :
    print("hello")
    main()
