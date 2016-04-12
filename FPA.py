@@ -3,6 +3,7 @@ import xlsxwriter
 import configparser
 import os
 from ConfigRAM import ConfigRAM
+from Stats import Stats
 
 class FPA:
 #   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
@@ -36,6 +37,10 @@ class FPA:
     #  infile = 'occurrence_qc.json' #for now
     #  with open(infile) as data_file:
     #     self.fpa=json.load(data_file)
+      self.stats ={}
+      for outcome in self.outcomes:
+          self.stats[outcome] = 0
+      
       self.numRecords = len(self.fpAkkaOutput)
 
    def getOutcomes(self) :
@@ -119,7 +124,7 @@ class FPA:
    #doesn't belong in this class
    
    def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):
-      print("fmts=",type(formats))
+#      print("fmts=",type(formats))
       bold = workbook.add_format({'bold': True})
    #   print("stats=",stats)
    #   print("outcomes=", outcomes)
@@ -128,7 +133,7 @@ class FPA:
       for str in outcomes :
          col=1+origin[1]+outcomes.index(str) #insure order is as in outcomes list
          worksheet.write(origin[0],col, str, bold) #write col header
-      stats = self
+      stats = self.getStats()
       print("stats self has type=", type(self))
       for k, v in stats.items():
    #      print("key=",k,"val=", v)
@@ -149,6 +154,7 @@ class FPA:
 def main():
    import pprint
    import xlsxwriter
+#   import Stats
    configFile = 'stats.ini'
    config = ConfigRAM(configFile)
    origin1 = [0,0]
@@ -169,6 +175,16 @@ def main():
   # print("fpa=", fpa.getValidators(), fpa.getOutcomes(), fpa.getOutcomeColors())
    print("numRecs=",fpa.getNumRecords())
    print("formats=", fpa.getFormats())
+   formats = fpa.getFormats()
+#   fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
+   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
+   stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
+#   r =range(len(outcomes))
+#   print(type(r))
+#   for col in range(len(outcomes)):
+#      print(col)
+   workbook.close()
+   
 if __name__ == "__main__" :
    print("hello")
    main()
