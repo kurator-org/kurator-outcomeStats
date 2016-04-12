@@ -3,7 +3,7 @@ import xlsxwriter
 import configparser
 import os
 from ConfigRAM import ConfigRAM
-from Stats import Stats
+#from Stats import Stats
 
 class FPA:
 #   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
@@ -177,7 +177,7 @@ def main():
    print("formats=", fpa.getFormats())
    formats = fpa.getFormats()
 #   fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
-   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
+   stats =  FPA(workbook, worksheet, dataFileName,  validators, outcomes, outcome_colors, origin1, origin2)
    stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
 #   r =range(len(outcomes))
 #   print(type(r))
