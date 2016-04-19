@@ -1,6 +1,7 @@
 import xlsxwriter
 import configparser
 import ast
+import yaml
 class ConfigRAM :
     def __init__(self, configFile):
         self.configFile = configFile
@@ -8,16 +9,22 @@ class ConfigRAM :
         self.config.sections()
         xx=self.config.read(self.configFile)
 #        print("xx=",xx)
-        self.validators = self.config.get('DEFAULT', 'validators')
-        self.outcomes = self.config.get('DEFAULT', 'outcomes')
+#        self.validators = yaml.load( self.config.get('DEFAULT', 'validators'))
+#        self.validators = self.config.get('DEFAULT', 'validators')
+        self.validators = ast.literal_eval(self.config.get('DEFAULT','validators'))
+#        print("validators type=", type(self.validators))
+#        self.outcomes = yaml.load(self.config.get('DEFAULT', 'outcomes'))
+#        self.outcomes =   self.config.get('DEFAULT', 'outcomes')
+        self.outcomes = ast.literal_eval(self.config.get('DEFAULT','outcomes'))
+#        print("outcomes type=", type(self.outcomes))
         self.outcome_colors = ast.literal_eval(self.config.get('DEFAULT','outcome_colors'))
- #       print(type(self.outcome_colors))
+#        print("outcome_colors type=",type(self.outcome_colors))
 #        self.workbookName= ast.literal_eval(self.config.get('DEFAULT', 'workbookName'))
         self.workbookName= self.config.get('DEFAULT', 'workbookName')
         self.workbook = xlsxwriter.Workbook(self.workbookName)
 #        print(self.workbook, "type(self.workbook=", type(self.workbook))
         self.dataFileName = self.config.get('DEFAULT', 'data')
-        print("config dfN=", self.dataFileName, "dfNType=", type(self.dataFileName))
+#        print("config dfN=", self.dataFileName, "dfNType=", type(self.dataFileName))
 #        self.formats= {}
 #        for outcome, color in self.outcome_colors.items():
 #            self.formats[outcome] =self.workbook.add_format()
@@ -69,9 +76,9 @@ def main():
     origin1 = [0,0]
     origin2 = [5,0]
     print(configFile, config.getWorkbook(),config.getWorksheet())
-    print(config.getValidators())
-    print(config.getOutcomes())
-    print(config.getOutcomeColors())
+    print("validators=",config.getValidators())
+    print("outcomes=",config.getOutcomes())
+    print("outcome_colors=", config.getOutcomeColors())
 
 if __name__ == "__main__" :
    main()

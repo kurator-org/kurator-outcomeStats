@@ -4,6 +4,8 @@ import configparser
 import os
 from ConfigRAM import ConfigRAM
 #from Stats import Stats
+import collections
+import sys
 
 class FPA:
 #   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
@@ -15,6 +17,7 @@ class FPA:
       self.origin1 = origin1
       self.origin2 = origin2
       self.outcome_colors = outcome_colors # a dict
+      print(len(validators), len(outcomes))
 #      self.dataFileName = '/home/ram/git/kurator-outcomeStats/occurrence_qc.json' #######
 #      self.dataFileName = os.getcwd()+'/'+dataFileName
 #      self.data=open(dataFileName, encoding='utf-8')
@@ -121,8 +124,7 @@ class FPA:
       workbook = xlsxwriter.Workbook(outfile)
       return workbook
    
-   #doesn't belong in this class
-   
+
    def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):
 #      print("fmts=",type(formats))
       bold = workbook.add_format({'bold': True})
@@ -130,25 +132,44 @@ class FPA:
    #   print("outcomes=", outcomes)
    #   print(origin)
       worksheet.write(origin[0],origin[1],"Validator",bold)
-      for str in outcomes :
-         col=1+origin[1]+outcomes.index(str) #insure order is as in outcomes list
-         worksheet.write(origin[0],col, str, bold) #write col header
-      stats = self.getStats()
-      print("stats self has type=", type(self))
+      for k,v in outcomes :
+         col=1+origin[1]+outcomes.index(k) #insure order is as in outcomes list
+         worksheet.write(origin[0],col, k, bold) #write col header
+      self.maxlength= max(len(s) for s in self.validators)
+      self.max1= max(len(s) for s in self.validators)
+      self.max2= max(len(t) for t in self.outcomes)
+      self.maxlength = max(self.max1,self.max2)
+      
+#      self.stats = self.setStats()
+      print("validators=", validators, "outcomes=", outcomes)
+      numRows = len(self.validators)
+      numCols = len(self.outcomes)
+      stats = {}
+      row = 1
+      col = 1
+      print("numRows=",numRows, "numCols=", numCols)
+      sys.exit()
+      while row < numRows:
+         while col < numCols:
+            print("row=",row, "col=",col)
+#            stats[row][col] = 0.0
+            col = col + 1
+         row = row + 1
+      sys.exit()
       for k, v in stats.items():
-   #      print("key=",k,"val=", v)
+         print("key=",k,"val=", v)
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
-   #      print("row=",row)
+         print("row=",row)
          worksheet.write(row,0,k) #write validator name
          #write data for each validator in its own row
-         for outcome, statval in v.items():
-            col=1+outcomes.index(outcome) #put cols in order of the outcomes list
+       ##  for outcome, statval in v.items():
+       ##     col=1+outcomes.index(outcome) #put cols in order of the outcomes list
   #          print("formats type=", type(formats))
-            format = formats.get(outcome)
-            print("format=",format, " type=",type(format)) #gives a class, want an instance
+       ##     format = formats.get(outcome)
+      ##      print("format=",format, " type=",type(format)) #gives a class, want an instance
 #            worksheet.write(row, col, statval,formats.get(outcome))
 #            format = format.getFormat(outcome)
-            worksheet.write(row, col, statval, format)
+        ##    worksheet.write(row, col, statval, format)
    
    
 def main():
@@ -164,11 +185,12 @@ def main():
    worksheet = config.getWorksheet()
    dataFileName = config.getDataFileName()
    validators = config.getValidators()
+   print("validators=", validators, "type=", type(validators))
    outcomes = config.getOutcomes()
    outcome_colors = config.getOutcomeColors()
   # print(dataFileName,configFile, workbook,worksheet)
    #print(validators)
-   #print(outcomes)
+   print("outcomes=",outcomes)
    #print(outcome_colors)
    fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
    
@@ -176,9 +198,9 @@ def main():
    print("numRecs=",fpa.getNumRecords())
    print("formats=", fpa.getFormats())
    formats = fpa.getFormats()
-#   fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
-   stats =  FPA(workbook, worksheet, dataFileName,  validators, outcomes, outcome_colors, origin1, origin2)
-   stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
+   fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
+#   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
+#   stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
 #   r =range(len(outcomes))
 #   print(type(r))
 #   for col in range(len(outcomes)):
