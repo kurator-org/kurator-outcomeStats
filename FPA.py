@@ -132,7 +132,7 @@ class FPA:
    #   print("outcomes=", outcomes)
    #   print(origin)
       worksheet.write(origin[0],origin[1],"Validator",bold)
-      for k,v in outcomes :
+      for k in outcomes:
          col=1+origin[1]+outcomes.index(k) #insure order is as in outcomes list
          worksheet.write(origin[0],col, k, bold) #write col header
       self.maxlength= max(len(s) for s in self.validators)
@@ -144,7 +144,7 @@ class FPA:
       print("validators=", validators, "outcomes=", outcomes)
       numRows = len(self.validators)
       numCols = len(self.outcomes)
-      stats = {}
+      stats = [[0.0 for x in range(numCols)] for y in range(numRows)]
       row = 1
       col = 1
       print("numRows=",numRows, "numCols=", numCols)
@@ -152,7 +152,7 @@ class FPA:
       while row < numRows:
          while col < numCols:
             print("row=",row, "col=",col)
-#            stats[row][col] = 0.0
+            stats[row][col] = 0.0
             col = col + 1
          row = row + 1
       sys.exit()
