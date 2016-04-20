@@ -132,32 +132,32 @@ class FPA:
    #   print("outcomes=", outcomes)
    #   print(origin)
       worksheet.write(origin[0],origin[1],"Validator",bold)
-      for k in outcomes:
-         col=1+origin[1]+outcomes.index(k) #insure order is as in outcomes list
-         worksheet.write(origin[0],col, k, bold) #write col header
+      for outcome in outcomes:
+         col=1+origin[1]+outcomes.index(outcome) #insure order is as in outcomes list
+         worksheet.write(origin[0],col, outcome, bold) #write col header
+         print("outcome=",outcome,"len=",len(outcome))
+         colWidth = len(outcome)*2
+         worksheet.set_column(origin[0],col, colWidth)
       self.maxlength= max(len(s) for s in self.validators)
       self.max1= max(len(s) for s in self.validators)
       self.max2= max(len(t) for t in self.outcomes)
       self.maxlength = max(self.max1,self.max2)
       
+      
 #      self.stats = self.setStats()
-      print("validators=", validators, "outcomes=", outcomes)
+#      print("validators=", validators, "outcomes=", outcomes)
       numRows = len(self.validators)
       numCols = len(self.outcomes)
       stats = [[0.0 for x in range(numCols)] for y in range(numRows)]
       row = 1
       col = 1
-      print("numRows=",numRows, "numCols=", numCols)
-      sys.exit()
-      while row < numRows:
-         while col < numCols:
-            print("row=",row, "col=",col)
-            stats[row][col] = 0.0
-            col = col + 1
-         row = row + 1
-      sys.exit()
-      for k, v in stats.items():
-         print("key=",k,"val=", v)
+#      print("numRows=",numRows, "numCols=", numCols)
+      print(stats)
+   #   sys.exit()
+
+#      for k, v in stats.items():
+      for k in validators:
+#         print("key=",k,"val=", v)
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
          print("row=",row)
          worksheet.write(row,0,k) #write validator name
