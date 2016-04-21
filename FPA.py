@@ -17,14 +17,14 @@ class FPA:
       self.origin1 = origin1
       self.origin2 = origin2
       self.outcome_colors = outcome_colors # a dict
-      print(len(validators), len(outcomes))
+##      print(len(validators), len(outcomes))
 #      self.dataFileName = '/home/ram/git/kurator-outcomeStats/occurrence_qc.json' #######
 #      self.dataFileName = os.getcwd()+'/'+dataFileName
 #      self.data=open(dataFileName, encoding='utf-8')
-      print("dataFileName=",self.dataFileName, "type=", type(self.dataFileName))
+##      print("dataFileName=",self.dataFileName, "type=", type(self.dataFileName))
       self.outcomes = outcomes
       with open(self.dataFileName) as data_file:   ############## could be a stream???
-                 self.fpAkkaOutput=json.load(data_file)
+                self.data= self.fpAkkaOutput=json.load(data_file)
 
       self.formats= {}
       for outcome, color in self.outcome_colors.items():
@@ -131,13 +131,21 @@ class FPA:
    #   print("stats=",stats)
    #   print("outcomes=", outcomes)
    #   print(origin)
-      worksheet.write(origin[0],origin[1],"Validator",bold)
+         #Set col headers
+      worksheet.write(origin[0],origin[1],"Validator",bold) 
       for outcome in outcomes:
          col=1+origin[1]+outcomes.index(outcome) #insure order is as in outcomes list
          worksheet.write(origin[0],col, outcome, bold) #write col header
-         print("outcome=",outcome,"len=",len(outcome))
+##         print("outcome=",outcome,"len=",len(outcome))
          colWidth = len(outcome)*2
          worksheet.set_column(origin[0],col, colWidth)
+
+         #Set row names
+      for k in validators:
+         row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
+##         print("row=",row)
+         worksheet.write(row,0,k) #write validator name
+
       self.maxlength= max(len(s) for s in self.validators)
       self.max1= max(len(s) for s in self.validators)
       self.max2= max(len(t) for t in self.outcomes)
@@ -152,25 +160,35 @@ class FPA:
       row = 1
       col = 1
 #      print("numRows=",numRows, "numCols=", numCols)
-      print(stats)
+##      print(stats)
    #   sys.exit()
 
-#      for k, v in stats.items():
-      for k in validators:
-#         print("key=",k,"val=", v)
-         row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
-         print("row=",row)
-         worksheet.write(row,0,k) #write validator name
-         #write data for each validator in its own row
-       ##  for outcome, statval in v.items():
-       ##     col=1+outcomes.index(outcome) #put cols in order of the outcomes list
-  #          print("formats type=", type(formats))
-       ##     format = formats.get(outcome)
-      ##      print("format=",format, " type=",type(format)) #gives a class, want an instance
-#            worksheet.write(row, col, statval,formats.get(outcome))
-#            format = format.getFormat(outcome)
-        ##    worksheet.write(row, col, statval, format)
-   
+      ###fill stats from FPA object
+      ###
+#      print("data=", self.data)
+      print("L169 type of data=", type(self.data[0])) #shouldn't need to de-ref
+      self.fpa = self.data[0]
+      normalize = True ###for now
+#      stats = createStats(self,normalize)
+             
+
+   def createStats(self, normalize):
+      fpa=self.fpa
+      validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
+      for record in range(len(fpa)):
+         self.updateValidatorStats(fpa, validatorStats, record) 
+         if normalize == True :
+            self.normalizeStats(fpa,validatorStats)
+      return validatorStats   
+
+   def updateValidatorStats(self,fpa, stats, record)  :
+      data=fpa[record]["Markers"]
+   #   print("in updateValidatorStats[",record,"]")
+      for data_k, data_v in data.items() :
+         for stats_k, stats_v in stats.items() :
+            if (stats_k == data_k):
+               stats[stats_k][data_v] += 1
+      return stats
    
 def main():
    import pprint
@@ -185,18 +203,18 @@ def main():
    worksheet = config.getWorksheet()
    dataFileName = config.getDataFileName()
    validators = config.getValidators()
-   print("validators=", validators, "type=", type(validators))
+##   print("validators=", validators, "type=", type(validators))
    outcomes = config.getOutcomes()
    outcome_colors = config.getOutcomeColors()
   # print(dataFileName,configFile, workbook,worksheet)
    #print(validators)
-   print("outcomes=",outcomes)
+##   print("outcomes=",outcomes)
    #print(outcome_colors)
    fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
    
   # print("fpa=", fpa.getValidators(), fpa.getOutcomes(), fpa.getOutcomeColors())
-   print("numRecs=",fpa.getNumRecords())
-   print("formats=", fpa.getFormats())
+##   print("numRecs=",fpa.getNumRecords())
+##   print("formats=", fpa.getFormats())
    formats = fpa.getFormats()
    fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
 #   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
@@ -208,5 +226,5 @@ def main():
    workbook.close()
    
 if __name__ == "__main__" :
-   print("hello")
+##   print("hello")
    main()
