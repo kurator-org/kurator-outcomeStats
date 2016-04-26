@@ -46,6 +46,8 @@ class FPA:
       
       self.numRecords = len(self.fpAkkaOutput)
 
+   def getStats(stats) :
+      return self.stats
    def getOutcomes(self) :
       return self.outcomes
    def getValidators(self) :
@@ -166,29 +168,59 @@ class FPA:
       ###fill stats from FPA object
       ###
 #      print("data=", self.data)
-      print("L169 type of data=", type(self.data[0])) #shouldn't need to de-ref
-      self.fpa = self.data[0]
-      normalize = True ###for now
-#      stats = createStats(self,normalize)
+###
+###      print("L169 type of data=", type(self.data)) #shouldn't need to de-ref
+     ### self.fpa = self.data[0]
+      self.fpa = self.data
+      normalize = False ###for now
+      print("len(fpa)=",len(self.fpa))
+#      for k in self.data:
+#         print("type(k)=",type(k),"\n")
+
+
+      validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
+##      print("validatorStats=",validatorStats)
+      for record in range(len(self.fpa)):
+ ##        print("len(self.fpa)=", len(self.fpa), "record=",record)
+         validatorStats = updateValidatorStats(self.fpa, validatorStats, record) 
+         if normalize == True :
+            self.normalizeStats(self.fpa,validatorStats)
+##         print("validatorStats=",validatorStats)
+      return validatorStats
              
 
-   def createStats(self, normalize):
-      fpa=self.fpa
-      validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
-      for record in range(len(fpa)):
-         self.updateValidatorStats(fpa, validatorStats, record) 
-         if normalize == True :
-            self.normalizeStats(fpa,validatorStats)
-      return validatorStats   
+def createStats(fpa, normalize):
+#   fpa=self.fpa
+   validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
+   for record in range(len(fpa)):
+      self.updateValidatorStats(fpa, validatorStats, record) 
+      if normalize == True :
+         self.normalizeStats(fpa,validatorStats)
+   return validatorStats   
 
-   def updateValidatorStats(self,fpa, stats, record)  :
-      data=fpa[record]["Markers"]
+
+def updateValidatorStats(fpa, stats, record)  :
+#   print("fpa=",fpa)
+#   sys.exit()
+   data=fpa[record]["Markers"]
    #   print("in updateValidatorStats[",record,"]")
-      for data_k, data_v in data.items() :
-         for stats_k, stats_v in stats.items() :
-            if (stats_k == data_k):
-               stats[stats_k][data_v] += 1
-      return stats
+   for data_k, data_v in data.items() :
+      for stats_k, stats_v in stats.items() :
+         if (stats_k == data_k):
+            stats[stats_k][data_v] += 1
+   return stats
+
+def fillStats(fpa):
+   validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
+   for record in range(len(fpa)):
+      self.updateValidatorStats(fpa, validatorStats, record) 
+      if normalize == True :
+         self.normalizeStats(fpa,validatorStats)
+   return validatorStats   
+
+def storeData(workbook, worksheet, validatorStats):
+   print("stalidator=    ", validatorStats)
+   
    
 def main():
    import pprint
@@ -216,7 +248,9 @@ def main():
 ##   print("numRecs=",fpa.getNumRecords())
 ##   print("formats=", fpa.getFormats())
    formats = fpa.getFormats()
-   fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
+   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
+   print("walidatorStats=",stats)
+   storedStats = storeData(workbook, worksheet, stats)
 #   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
 #   stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
 #   r =range(len(outcomes))
