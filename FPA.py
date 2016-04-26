@@ -46,6 +46,10 @@ class FPA:
       
       self.numRecords = len(self.fpAkkaOutput)
 
+   def setCells(self, workbook, worksheet, stats):
+      print("in setCells")
+      
+
    def getStats(stats) :
       return self.stats
    def getOutcomes(self) :
@@ -251,6 +255,7 @@ def main():
    stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
    print("walidatorStats=",stats)
    storedStats = storeData(workbook, worksheet, stats)
+   fpa.setCells(workbook, worksheet, stats)
 #   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
 #   stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
 #   r =range(len(outcomes))
