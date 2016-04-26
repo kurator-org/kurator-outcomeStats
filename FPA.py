@@ -48,6 +48,12 @@ class FPA:
 
    def setCells(self, workbook, worksheet, stats):
       print("in setCells")
+      for col in range(len(self.outcomes)):      
+         for row in range(len(self.validators)):
+#            worksheet.write(row, col, 3, format)
+#            stat = 
+            worksheet.write(1+row, 1+col, 3)  
+
       
 
    def getStats(stats) :
