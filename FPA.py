@@ -29,7 +29,14 @@ class FPA:
       self.formats= {}
       for outcome, color in self.outcome_colors.items():
          self.formats[outcome] =self.workbook.add_format()
-         self.formats[outcome].set_bg_color(color)
+###         self.formats[outcome].set_bg_color(color)
+         format = workbook.add_format()
+         format.set_bg_color('red')
+         worksheet.write('A1', 'Ray', format)
+#         self.formats[outcome] = workbook.add_format({'bg_color': color})
+#         worksheet.write_number(3,2,3.14,self.formats[outcome])
+         
+         print("color=",color)
  #     self.worksheet = self.workbook.add_worksheet()  #set in ConfigRAM
 
       self.maxlength= max(len(s) for s in self.validators)
@@ -46,28 +53,43 @@ class FPA:
       
       self.numRecords = len(self.fpAkkaOutput)
 
-   def setCellsBad(self, workbook, worksheet, stats):
+   def showFormat(self,theFormat):
+      print("showFormat")
+      
+   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes, formats):
       print("in setCells")
-      for col in range(len(self.outcomes)):      
-         for row in range(len(self.validators)):
-#            worksheet.write(row, col, 3, format)
-#            print("stats=",stats)
-            worksheet.write(1+row, 1+col, 3)  
-
-   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes):
-      print("in setCells")
-      print(list(stats.keys()))
-      print(list(stats.values()))
+#      print(list(stats.keys()))
+#      print(list(stats.values()))
+      aFormat=formats.get('UNABLE_DETERMINE_VALIDITY')
+      print("aFormat=",aFormat, "type=", type(aFormat))
+##      keyList=list(aFormat.keys())
+##      print("keyList=",keyList)
+#      theFormat=formats.get('UNABLE_DETERMINE_VALIDITY')
+      
+#      showFormat(self.theFormat)
       for k, v in stats.items():
    #      print("key=",k,"val=", v)
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
          #      print("row=",row)
          worksheet.write(row,0,k) #write validator name
          #write data for each validator in its own row
+         
+         keylist = formats.keys()
+         keyidx = 0
+#         print("setCells: keylist=", keylist)
+         outcome_colors = {'CORRECT':'#00FF00', 'CURATED':'#FFFF00', 'FILLED_IN':'#DDDD00', 'UNABLE_DETERMINE_VALIDITY':'#888888',  'UNABLE_CURATE':'#FF0000' }
+
          for outcome, statval in v.items():
             col=1+outcomes.index(outcome) #put cols in order of the outcomes list
-#           worksheet.write(row, col, statval,formats.get(outcome))
-            worksheet.write(row, col, statval)
+            format = formats.get(outcome)
+#            print("format=",format)
+#            worksheet.write(row, col, statval,formats.get(outcome))
+            format = workbook.add_format()
+            print("outcome=", outcome, "color=", outcome_colors[outcome] )
+            format.set_bg_color(outcome_colors[outcome])
+            worksheet.write(row, col, statval, format)
+            keyidx = 1+keyidx
+#         print("setCells: formats=", formats)
 #      rowList=list(stats.values))
 
 #         row = 1+index(k)
@@ -215,7 +237,9 @@ class FPA:
 ##      print("validatorStats=",validatorStats)
       for record in range(len(self.fpa)):
  ##        print("len(self.fpa)=", len(self.fpa), "record=",record)
-         validatorStats = updateValidatorStats(self.fpa, validatorStats, record) 
+         validatorStats = updateValidatorStats(self.fpa, validatorStats, record)
+#         print("validatorStats type=", type(validatorStats))
+#         print("validatorStats=", validatorStats)
          if normalize == True :
             self.normalizeStats(self.fpa,validatorStats)
 ##         print("validatorStats=",validatorStats)
@@ -276,17 +300,18 @@ def main():
   # print(dataFileName,configFile, workbook,worksheet)
    #print(validators)
 ##   print("outcomes=",outcomes)
-   #print(outcome_colors)
+   print("occ=", outcome_colors)
    fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
    
-  # print("fpa=", fpa.getValidators(), fpa.getOutcomes(), fpa.getOutcomeColors())
+#   print("fpa=", fpa.getValidators(), fpa.getOutcomes(), fpa.getOutcomeColors())
 ##   print("numRecs=",fpa.getNumRecords())
 ##   print("formats=", fpa.getFormats())
    formats = fpa.getFormats()
+#   print("formats=",formats)
    stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
   # print("walidatorStats=",stats)
 ##   storedStats = storeData(workbook, worksheet, stats)
-   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes)
+   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes,formats)
 #   stats = Stats(workbook, worksheet, validators, outcomes, origin1)
 #   stats.stats2XLSX(workbook,worksheet,formats,origin1,outcomes,validators)
 #   r =range(len(outcomes))
