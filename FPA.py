@@ -139,7 +139,8 @@ class FPA:
       return workbook
    
 
-   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators, normalize):
+#   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators, normalize):
+   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):
 
       bold = workbook.add_format({'bold': True}) #for col headers
  
@@ -177,8 +178,8 @@ class FPA:
       validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
       for record in range(len(self.fpa)):
          validatorStats = self.updateValidatorStats(self.fpa, validatorStats, record)
-         if normalize == True :
-            self.normalizeStats(self.fpa,validatorStats)
+##         if normalize == True :
+##            self.normalizeStats(self.fpa,validatorStats)
       return validatorStats
              
    
@@ -202,9 +203,9 @@ def main():
    fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
    
    formats = fpa.getFormats()
-   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators,False)
+   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
    fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors,False)
-   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators, False)
+   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
    fpa.setCells(workbook, worksheet, stats, origin2, validators, outcomes, outcome_colors,True)
 
    workbook.close()
