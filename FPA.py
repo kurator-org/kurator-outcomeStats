@@ -88,35 +88,31 @@ class FPA:
       for data_k, data_v in data.items() :
          for stats_k, stats_v in stats.items() :
             if (stats_k == data_k):
-#               x=float(stats[stats_k][data_v])
-#               x += 1
                stats[stats_k][data_v] += 1.0
-#               stats[stats_k][data_v] = repr(x)
       return stats
    
-   #typed parameter requires python3
-   def createStats(self, fpa, normalize):
-      validatorStats = self.initValidatorStats(self.validators, self.outcomes)
-      for record in range(len(fpa)):
-         self.updateValidatorStats(fpa, validatorStats, record) 
-      if normalize == True :
-         self.normalizeStats(fpa,validatorStats)
-      return validatorStats
+#   def createStats(self, fpa, normalize):
+#      validatorStats = self.initValidatorStats(self.validators, self.outcomes)
+#      for record in range(len(fpa)):
+#         self.updateValidatorStats(fpa, validatorStats, record) 
+#      if normalize == True :
+#         self.normalizeStats(fpa,validatorStats)
+#      return validatorStats
    
-   def normalizeStats(self,fpa,stats):
+####   def normalizeStats(self,fpa,stats):
       #fpa is dict loaded from FP-Akka json output
       #divide outcome counts by occurrence counts
-      count=len(fpa)
-      count_f= float(count)
+####      count=len(fpa)
+####      count_f= float(count)
    #   if (count <= 0) return(-1)
-      for validator,outcomes in stats.items():
-         stat=stats[validator]
-         for k,v in stat.items():
-            v = float(v)/count_f
-            stat[k] = format(v, '.4f')
+####      for validator,outcomes in stats.items():
+####         stat=stats[validator]
+####         for k,v in stat.items():
+####            v = float(v)/count_f
+####            stat[k] = format(v, '.4f')
    #         print("yy:",stats[validator])
    #   print("in normalize stats=",stats)
-      return stats
+####      return stats
    
    def stats2CSV(self, stats, outfile, outcomes, validators):
       import csv
