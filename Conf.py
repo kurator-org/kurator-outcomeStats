@@ -1,13 +1,34 @@
+#!/usr/bin/env python
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+__author__ = "Robert A. Morris"
+__copyright__ = "Copyright 2016 President and Fellows of Harvard College"
+__version__ = "Conf.py 2016-05-04T16:21:26-0400"
+
 import xlsxwriter
 import configparser
 import ast
 import yaml
 class Conf :
+    """
+    Instances of Conf produce values of arguments for the constructor of class FPA using the configparser package
+    """
     def __init__(self, configFile):
         self.configFile = configFile
         self.config = configparser.ConfigParser()
         self.config.sections()
-        xx=self.config.read(self.configFile)
+        self.config.read(self.configFile)
         self.validators = ast.literal_eval(self.config.get('DEFAULT','validators'))
         self.outcomes = ast.literal_eval(self.config.get('DEFAULT','outcomes'))
         self.outcome_colors = ast.literal_eval(self.config.get('DEFAULT','outcome_colors'))

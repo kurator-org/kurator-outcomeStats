@@ -1,13 +1,70 @@
+#!/usr/bin/env python
+
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+__author__ = "Robert A. Morris"
+__copyright__ = "Copyright 2016 President and Fellows of Harvard College"
+__version__ = "FPA.py 2016-05-04T16:21:26-0400"
+
 import json
 import xlsxwriter
-import configparser
-import os
-from Conf import Conf
-import collections
-import sys
+#import configparser
+#import os
+#import collections
+#import sys
 
 class FPA:
+   """
+   Instances of FPA produce or modify a color-coded xlsx spreadsheet that allows 
+   comparisons against different Validators and Validator outcomes.  
+   See "Creating Excel files with Python and XlsxWriter" at http://xlsxwriter.readthedocs.io/
+   """
+
+   """
+      workbook : an instance of an xlsxwriter.workbook.Workbook. It models 
+
+      worksheet : an instance of an xlsxwriter.worksheet.Worksheet
+
+      dataFileName : a python str providing the name of the output of the FP-Akka workflowstarter.jar as described in
+              http://wiki.datakurator.net/web/FP-Akka_User_Documentation. At this writing such a file
+              must be JSON. Such a file need not be provided by FP-Akka itself. The workflowstarter jar
+              provides more than this FPA class processes, and there will be forthcoming description of what
+              such a JSON file must contain at a minimum
+
+      validators : a tuple of validator names mentioned in the dataFile named in dataFileName. 
+              Example provided by  FP-Akka: 
+              ('ScientificNameValidator','DateValidator',  'GeoRefValidator','BasisOfRecordValidator') 
+
+      outcomes : a tuple of outcome names mentioned in the dataFile. 
+              Example: ('CORRECT','CURATED','FILLED_IN', 'UNABLE_DETERMINE_VALIDITY',  'UNABLE_CURATE') 
+
+      outcome_colors : a dictionary keyed by outcome names with values given as HTML RGB colors
+              Example: outcome_colors = {'CORRECT':'#00FF00', 'CURATED':'#FFFF00', 'FILLED_IN':'#DDDD00', 'UNABLE_DETERMINE_VALIDITY':'#888888',  'UNABLE_CURATE':'#FF0000' }
+
+      origin1 : a list describing the origin of a location of the first Validator by Outcome table in the worksheet
+              Example: [0,0]
+      origin2 : a list describing the origin of a location of a second Validator by Outcome table in the worksheet
+              Example: [5,0]
+              Typically there might be two tables, one at top of the spreadsheet, and a second below it positioned
+              1+len(validators) below the first.  In such a use, the first set would have total outcome count in
+              each entry and second set would normalize by the total number of records in the dataFile. 
+              See setCells(...) below
+
+
+   """
    def __init__(self, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2):
+      thing = origin2
+      print("thing=",thing, "type=", type(thing))
       self.workbook = workbook
       self.dataFileName = dataFileName
       self.validators = validators
@@ -35,8 +92,6 @@ class FPA:
 #          print("type: ", type(self.stats[outcome]))
       self.numRecords = len(self.fpAkkaOutput)
 
-   def showFormat(self,theFormat):
-      print("showFormat")
       
    def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors, normalize):
       print("in setCells numRec=", self.getNumRecords())
@@ -91,29 +146,6 @@ class FPA:
                stats[stats_k][data_v] += 1.0
       return stats
    
-#   def createStats(self, fpa, normalize):
-#      validatorStats = self.initValidatorStats(self.validators, self.outcomes)
-#      for record in range(len(fpa)):
-#         self.updateValidatorStats(fpa, validatorStats, record) 
-#      if normalize == True :
-#         self.normalizeStats(fpa,validatorStats)
-#      return validatorStats
-   
-####   def normalizeStats(self,fpa,stats):
-      #fpa is dict loaded from FP-Akka json output
-      #divide outcome counts by occurrence counts
-####      count=len(fpa)
-####      count_f= float(count)
-   #   if (count <= 0) return(-1)
-####      for validator,outcomes in stats.items():
-####         stat=stats[validator]
-####         for k,v in stat.items():
-####            v = float(v)/count_f
-####            stat[k] = format(v, '.4f')
-   #         print("yy:",stats[validator])
-   #   print("in normalize stats=",stats)
-####      return stats
-   
    def stats2CSV(self, stats, outfile, outcomes, validators):
       import csv
       with open(outfile, 'w') as csvfile:
@@ -127,15 +159,7 @@ class FPA:
             row['Validator'] = v
             writer.writerow(row)
    
-   def initWorkbook(outfile):
-      """
-      Returns a workbook to be written to **outfile**
-      """
-      workbook = xlsxwriter.Workbook(outfile)
-      return workbook
-   
 
-#   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators, normalize):
    def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):
 
       bold = workbook.add_format({'bold': True}) #for col headers
@@ -169,7 +193,6 @@ class FPA:
       ###fill stats from FPA object
 
       self.fpa = self.data
-  ##    normalize = False ###for now
       print("len(fpa)=",len(self.fpa))
       validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
       for record in range(len(self.fpa)):
@@ -181,6 +204,7 @@ class FPA:
    
    
 def main():
+   from Conf import Conf
    import pprint
    import xlsxwriter
    configFile = 'stats.ini'
@@ -191,6 +215,7 @@ def main():
    workbook = config.getWorkbook()
    worksheet = config.getWorksheet()
    dataFileName = config.getDataFileName()
+  # print("dataFileName=", dataFileName())
    validators = config.getValidators()
 
    outcomes = config.getOutcomes()
