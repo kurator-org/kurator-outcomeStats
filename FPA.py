@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-04T16:21:26-0400"
+__version__ = "FPA.py 2016-05-05T14:20:54-0400"
 
 import json
 import xlsxwriter
@@ -60,7 +60,7 @@ class FPA:
               each entry and second set would normalize by the total number of records in the dataFile. 
               See setCells(...) below
 
-
+   
    """
    def __init__(self, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2):
       thing = origin2
@@ -94,7 +94,15 @@ class FPA:
 
       
    def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors, normalize):
-      print("in setCells numRec=", self.getNumRecords())
+      """
+         stats is a dictionary with validator names as keys and dictionaries as values. The value dictionaries
+            have outcomes as keys and a number as value; when normalize = False, that number is an integer 
+            that is the number of records having the given outcome for the given validator.
+            If normalize = True, then this stat value is a float which is the corresponding number divided
+            by the number of  data records processed by stats2XLSX(...) 
+      """
+      thing = stats
+      print("in setCells thing=",thing, "type=", type(thing))
       for k, v in stats.items():
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
          worksheet.write(row,0,k) #write validator name
@@ -102,8 +110,10 @@ class FPA:
          #write data for each validator in its own row
          for outcome, statval in v.items():
             col=1+outcomes.index(outcome) #put cols in order of the outcomes list
-            format = workbook.add_format()
-            format.set_bg_color(outcome_colors[outcome])
+            if normalize:
+               format= workbook.add_format({'bg_color': outcome_colors[outcome], 'num_format': '0.000'})
+            else:
+               format= workbook.add_format({'bg_color': outcome_colors[outcome]})
             if normalize: 
                stat = statval/self.getNumRecords()
             else:
@@ -125,13 +135,13 @@ class FPA:
    def getFormats(self):
       return self.formats
    
-   def initStats(self,outcomes) :
+   def initStats(self,outcomes) :  #to do: insure only called once at FPA instantiation 
       stats = {}
       for outcome in outcomes:
           stats[outcome] = float(0)
       return stats
    
-   def initValidatorStats(self,validators, outcomes) :
+   def initValidatorStats(self,validators, outcomes) :  #to do: insure only called once at FPA instantiation 
       stats = {}
       for v in validators :
          stats[v] = self.initStats(outcomes)
@@ -160,8 +170,12 @@ class FPA:
             writer.writerow(row)
    
 
-   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):
-
+   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):  #to do: are multiple calls OK?
+      """
+      Function produces a stats dictionary whose keys are validator names and whose values are dictionaries that,
+         in turn have keys that are outcome names and values are a number that is a statistic for the given outcome.
+         An example is shown in setCells(...)
+      """
       bold = workbook.add_format({'bold': True}) #for col headers
  
          #Set col headers
