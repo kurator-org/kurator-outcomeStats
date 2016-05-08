@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-05T14:20:54-0400"
+__version__ = "FPA.py 2016-05-07T22:13:19-0400"
 
 import json
 import xlsxwriter
@@ -26,8 +26,10 @@ import xlsxwriter
 class FPA:
    """
    Instances of FPA produce or modify a color-coded xlsx spreadsheet that allows 
-   comparisons against different Validators and Validator outcomes.  
+      comparisons against different Validators and Validator outcomes.  
    See "Creating Excel files with Python and XlsxWriter" at http://xlsxwriter.readthedocs.io/
+   See also http://wiki.datakurator.net/web/FP-Akka_User_Documentation about the source of the data that 
+      this application takes data from.
    """
 
    """
@@ -100,6 +102,13 @@ class FPA:
             that is the number of records having the given outcome for the given validator.
             If normalize = True, then this stat value is a float which is the corresponding number divided
             by the number of  data records processed by stats2XLSX(...) 
+
+         cell colors are set from outcome_colors
+         
+         excel numeric formats are hard coded here as either '0.000' if normalize = True or else default,
+            which is normally as an integer.  Possibly the numeric format should be an argument
+
+         NOTE: subsequent worksheet.write(...) can change the worksheet
       """
       thing = stats
       print("in setCells thing=",thing, "type=", type(thing))
@@ -112,13 +121,11 @@ class FPA:
             col=1+outcomes.index(outcome) #put cols in order of the outcomes list
             if normalize:
                format= workbook.add_format({'bg_color': outcome_colors[outcome], 'num_format': '0.000'})
-            else:
-               format= workbook.add_format({'bg_color': outcome_colors[outcome]})
-            if normalize: 
                stat = statval/self.getNumRecords()
             else:
+               format= workbook.add_format({'bg_color': outcome_colors[outcome]})
                stat = statval
-            worksheet.write(row, col, stat, format)
+            worksheet.write(row, col, stat, format) #set appropriate cell with value stat 
 
    def getStats(stats) :
       return self.stats
@@ -218,6 +225,7 @@ class FPA:
    
    
 def main():
+   """Example"""
    from Conf import Conf
    import pprint
    import xlsxwriter
