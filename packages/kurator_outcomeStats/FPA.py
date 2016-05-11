@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-07T22:13:19-0400"
+__version__ = "FPA.py 2016-05-10T12:30:26-0400"
 
 import json
 import xlsxwriter
@@ -33,9 +33,9 @@ class FPA:
    """
 
    """
-      workbook : an instance of an xlsxwriter.workbook.Workbook. It models 
+      workbook : an instance of an xlsxwriter.workbook.Workbook. It models an Excel XLSX Workbook
 
-      worksheet : an instance of an xlsxwriter.worksheet.Worksheet
+      worksheet : an instance of an xlsxwriter.worksheet.Worksheet. It models an Excel XLSX Worksheet
 
       dataFileName : a python str providing the name of the output of the FP-Akka workflowstarter.jar as described in
               http://wiki.datakurator.net/web/FP-Akka_User_Documentation. At this writing such a file
@@ -44,11 +44,14 @@ class FPA:
               such a JSON file must contain at a minimum
 
       validators : a tuple of validator names mentioned in the dataFile named in dataFileName. 
+              A validator is an object that can apply data quality criteria.
               Example provided by  FP-Akka: 
               ('ScientificNameValidator','DateValidator',  'GeoRefValidator','BasisOfRecordValidator') 
 
       outcomes : a tuple of outcome names mentioned in the dataFile. 
+              An outcome is one of a named outputs of a validator
               Example: ('CORRECT','CURATED','FILLED_IN', 'UNABLE_DETERMINE_VALIDITY',  'UNABLE_CURATE') 
+              TODO: treat case where not every outcome is meaningful to every validator
 
       outcome_colors : a dictionary keyed by outcome names with values given as HTML RGB colors
               Example: outcome_colors = {'CORRECT':'#00FF00', 'CURATED':'#FFFF00', 'FILLED_IN':'#DDDD00', 'UNABLE_DETERMINE_VALIDITY':'#888888',  'UNABLE_CURATE':'#FF0000' }
@@ -66,7 +69,7 @@ class FPA:
    """
    def __init__(self, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2):
       thing = origin2
-      print("thing=",thing, "type=", type(thing))
+#      print("thing=",thing, "type=", type(thing))
       self.workbook = workbook
       self.dataFileName = dataFileName
       self.validators = validators
@@ -94,6 +97,20 @@ class FPA:
 #          print("type: ", type(self.stats[outcome]))
       self.numRecords = len(self.fpAkkaOutput)
 
+   def normalizeStats(self, stats, norm):
+      """ divide every outcome value by norm """
+      import copy
+      statsNormed = copy.deepcopy(stats)
+#      print('statsNormed=',statsNormed)
+      for validator,stat in statsNormed.items():
+#         print("stat=",stat)
+         for outcome, value in stat.items():
+#            print("value=",value, "type=", type(value))
+            valueNew = value/norm
+#            print("valueNew",valueNew, "type=", type(valueNew))
+            stat[outcome] = valueNew
+#      print('statsNormed=',statsNormed)
+      return statsNormed
       
    def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors, normalize):
       """
@@ -111,7 +128,7 @@ class FPA:
          NOTE: subsequent worksheet.write(...) can change the worksheet
       """
       thing = stats
-      print("in setCells thing=",thing, "type=", type(thing))
+#      print("in setCells thing=",thing, "type=", type(thing))
       for k, v in stats.items():
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
          worksheet.write(row,0,k) #write validator name
@@ -214,7 +231,7 @@ class FPA:
       ###fill stats from FPA object
 
       self.fpa = self.data
-      print("len(fpa)=",len(self.fpa))
+#      print("len(fpa)=",len(self.fpa))
       validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
       for record in range(len(self.fpa)):
          validatorStats = self.updateValidatorStats(self.fpa, validatorStats, record)
@@ -229,6 +246,7 @@ def main():
    from Conf import Conf
    import pprint
    import xlsxwriter
+
    configFile = 'stats.ini'
    config = Conf(configFile)
    origin1 = [0,0]
@@ -248,8 +266,9 @@ def main():
    formats = fpa.getFormats()
    stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
    fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors,False)
-   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
-   fpa.setCells(workbook, worksheet, stats, origin2, validators, outcomes, outcome_colors,True)
+  # stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
+   stats2=fpa.normalizeStats(stats, fpa.getNumRecords())
+   fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors,False)
 
    workbook.close()
    
