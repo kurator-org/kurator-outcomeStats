@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "Conf.py 2016-05-11T22:52:52-0400"
+__version__ = "Conf.py 2016-05-13T14:03:52-0400"
 import xlsxwriter
 import configparser
 import ast
