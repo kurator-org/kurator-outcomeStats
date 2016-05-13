@@ -14,8 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "Conf.py 2016-05-05T14:20:54-0400"
-
+__version__ = "Conf.py 2016-05-11T22:52:52-0400"
 import xlsxwriter
 import configparser
 import ast
@@ -58,23 +57,16 @@ class Conf :
     def getWorkbookName(self): #name or object? do we care which?  #full pathname or local?
         return(self.workbookName)
     
-
     def getWorksheet(self):
         return(self.worksheet)
 
     def getDataFileName(self):
         return(self.dataFileName)
-    
-
-
-        
 
 def main():
     import pprint
     import xlsxwriter
     print ("main")
-    #args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
-    #workbook = xlsxwriter.Workbook(args.getOutfile())
     configFile = 'stats.ini'
     config = Conf(configFile)
     

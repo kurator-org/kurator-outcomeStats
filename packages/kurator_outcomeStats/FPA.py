@@ -14,14 +14,10 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-10T12:30:26-0400"
+__version__ = "FPA.py 2016-05-12T10:36:32-0400"
 
 import json
 import xlsxwriter
-#import configparser
-#import os
-#import collections
-#import sys
 
 class FPA:
    """
@@ -112,7 +108,8 @@ class FPA:
 #      print('statsNormed=',statsNormed)
       return statsNormed
       
-   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors, normalize):
+#   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors, normalize):
+   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors,numeric_format='0'):
       """
          stats is a dictionary with validator names as keys and dictionaries as values. The value dictionaries
             have outcomes as keys and a number as value; when normalize = False, that number is an integer 
@@ -136,12 +133,12 @@ class FPA:
          #write data for each validator in its own row
          for outcome, statval in v.items():
             col=1+outcomes.index(outcome) #put cols in order of the outcomes list
-            if normalize:
-               format= workbook.add_format({'bg_color': outcome_colors[outcome], 'num_format': '0.000'})
-               stat = statval/self.getNumRecords()
-            else:
-               format= workbook.add_format({'bg_color': outcome_colors[outcome]})
-               stat = statval
+#            if normalize:
+#               format= workbook.add_format({'bg_color': outcome_colors[outcome], 'num_format': '0.000'})
+#               stat = statval/self.getNumRecords()
+#            else:
+            format= workbook.add_format({'bg_color': outcome_colors[outcome], 'num_format':numeric_format })
+            stat = statval
             worksheet.write(row, col, stat, format) #set appropriate cell with value stat 
 
    def getStats(stats) :
@@ -201,19 +198,25 @@ class FPA:
          An example is shown in setCells(...)
       """
       bold = workbook.add_format({'bold': True}) #for col headers
- 
+      wrap = workbook.add_format()
+#      wrap.text_wrap(True)
+      wrap.set_text_wrap()
+ #     header_format = {'bold': True, 'text_wrap':True}
+      header_format= wrap
          #Set col headers
-      worksheet.write(origin[0],origin[1],"Validator",bold) 
+      worksheet.write(origin[0],origin[1],"Validator",header_format) 
       for outcome in outcomes:
          col=1+origin[1]+outcomes.index(outcome) #insure order is as in outcomes list
-         worksheet.write(origin[0],col, outcome, bold) #write col header
+#         worksheet.write(origin[0],col, outcome, bold) #write col header
+         worksheet.write(origin[0],col, outcome, header_format) #write col header
+#         print("wrap=",wrap)
          colWidth = len(outcome)*2   #heuristic compromise
          worksheet.set_column(origin[0],col, colWidth)
 
          #Set row names
       for k in validators:
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
-         worksheet.write(row,0,k) #write validator name
+         worksheet.write(row,0,k,bold) #write validator name
 
       self.max1 =      max(len(s) for s in self.validators)
 #      self.maxlength = max(len(s) for s in self.validators)
@@ -265,12 +268,14 @@ def main():
    
    formats = fpa.getFormats()
    stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
-   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors,False)
+   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors)
   # stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
    stats2=fpa.normalizeStats(stats, fpa.getNumRecords())
-   fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors,False)
+   cell_numeric_format = '0.00' 
+   fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors, cell_numeric_format)
 
    workbook.close()
    
 if __name__ == "__main__" :
    main()
+   print("version=", __version__)
