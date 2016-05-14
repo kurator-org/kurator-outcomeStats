@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-13T14:03:52-0400"
+__version__ = "FPA.py 2016-05-13T22:27:03-0400"
 
 import json
 import xlsxwriter
@@ -89,34 +89,24 @@ class FPA:
       self.stats ={}
       for outcome in self.outcomes:
          self.stats[outcome] = 0
-#          self.stats[outcome] = repr(0)
-#          print("type: ", type(self.stats[outcome]))
       self.numRecords = len(self.fpAkkaOutput)
 
    def normalizeStats(self, stats, norm):
-      """ divide every outcome value by norm """
+      """ divide every outcome value by norm and return a new stats object. """
       import copy
       statsNormed = copy.deepcopy(stats)
-#      print('statsNormed=',statsNormed)
       for validator,stat in statsNormed.items():
-#         print("stat=",stat)
          for outcome, value in stat.items():
-#            print("value=",value, "type=", type(value))
             valueNew = value/norm
-#            print("valueNew",valueNew, "type=", type(valueNew))
             stat[outcome] = valueNew
-#      print('statsNormed=',statsNormed)
       return statsNormed
       
-#   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors, normalize):
    def setCells(self, workbook, worksheet, stats, origin, validators, outcomes,outcome_colors,numeric_format='0'):
       """
          stats is a dictionary with validator names as keys and dictionaries as values. The value dictionaries
             have outcomes as keys and a number as value; when normalize = False, that number is an integer 
             that is the number of records having the given outcome for the given validator.
-            If normalize = True, then this stat value is a float which is the corresponding number divided
-            by the number of  data records processed by stats2XLSX(...) 
-
+            
          cell colors are set from outcome_colors
          
          excel numeric formats are hard coded here as either '0.000' if normalize = True or else default,
@@ -166,17 +156,22 @@ class FPA:
    
    def updateValidatorStats(self,fpa, stats, record)  :
       data=fpa[record]["Markers"]
-#      print("in updateValidatorStats[",record,"]")
       for data_k, data_v in data.items() :
          for stats_k, stats_v in stats.items() :
             if (stats_k == data_k):
                stats[stats_k][data_v] += 1.0
       return stats
    
-   def stats2CSV(self, stats, outfile, outcomes, validators):
+   def stats2CSV(self, stats, outfile, outcomes, validators): #BUG: requires a complete stats object
+      """
+      This function assumes that the stats dictionary has meaningful and complete statistics. But in
+      turn that may only happen i, e.g., FPA.stats2XLSX() has run and then stats produced by FPA.getStats()
+      """
       import csv
+      import copy
       with open(outfile, 'w') as csvfile:
-         o=outcomes
+#         o=copy.deepcopy(outcomes)
+         o = list(outcomes)
          o.insert(0,"Validator")
          fieldnames=tuple(o)
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -191,6 +186,8 @@ class FPA:
       """
       Function produces a stats dictionary whose keys are validator names and whose values are dictionaries that,
          in turn have keys that are outcome names and values are a number that is a statistic for the given outcome.
+      Although the returned stats object has the statistic data filled in, it is NOT written to the worksheet. That can be done by the setCells(...) function
+      
          An example is shown in setCells(...)
       """
       bold = workbook.add_format({'bold': True}) #for col headers
@@ -213,7 +210,7 @@ class FPA:
          worksheet.write(origin[0],col, outcome, bold) #write col header
 
 
-         #Set row names
+         #Set row headers from validator names
       for k in validators:
          row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
          worksheet.write(row,0,k) #write validator name
@@ -234,14 +231,10 @@ class FPA:
       col = 1
 
       ###fill stats from FPA object
-
       self.fpa = self.data
-#      print("len(fpa)=",len(self.fpa))
       validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
       for record in range(len(self.fpa)):
          validatorStats = self.updateValidatorStats(self.fpa, validatorStats, record)
-##         if normalize == True :
-##            self.normalizeStats(self.fpa,validatorStats)
       return validatorStats
              
    
@@ -277,6 +270,8 @@ def main():
    fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors, cell_numeric_format)
    validators=fpa.getValidators()
    print("validators=",validators, type(validators))
+   fpa.stats2CSV(stats,"stats.csv", outcomes,validators)
+
    workbook.close()
    
 if __name__ == "__main__" :
