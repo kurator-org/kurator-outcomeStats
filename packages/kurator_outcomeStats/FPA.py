@@ -14,11 +14,16 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-13T22:27:03-0400"
+__version__ = "FPA.py 2016-05-14T12:47:17-0400"
 
 import json
 import xlsxwriter
 
+class FPA_options:
+   def __init__(self,options):
+      print("FPA_options:")
+      
+   
 class FPA:
    """
    Instances of FPA produce or modify a color-coded xlsx spreadsheet that allows 
@@ -64,8 +69,15 @@ class FPA:
    
    """
    def __init__(self, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2):
-      thing = origin2
-#      print("thing=",thing, "type=", type(thing))
+      self.optionsList = list({workbook,worksheet, dataFileName, validators, outcomes})#, outcome_colors, origin1, origin2}
+      self.optionsList.append(outcome_colors)
+      self.optionsList.append(origin1)
+      self.optionsList.append(origin2)
+      a = ['workbook', workbook, 'outcomeNames',outcomes,'dataFileName',dataFileName,'worksheet', worksheet,'outcomeColorDict', outcome_colors,'origin1',origin1,'origin2',origin2,'validatorNames',validators]
+      self.options = {item : a[index+1] for index, item in enumerate(a) if index % 2 == 0}
+     # self.options['outcomeColorsDict'][outcome_colors]
+      thing = self.options
+      print("thing=",thing, "type=", type(thing))
       self.workbook = workbook
       self.dataFileName = dataFileName
       self.validators = validators
@@ -91,6 +103,9 @@ class FPA:
          self.stats[outcome] = 0
       self.numRecords = len(self.fpAkkaOutput)
 
+   def getOptions(self):
+      return self.options
+   
    def normalizeStats(self, stats, norm):
       """ divide every outcome value by norm and return a new stats object. """
       import copy
@@ -269,9 +284,9 @@ def main():
    cell_numeric_format = '0.00' 
    fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors, cell_numeric_format)
    validators=fpa.getValidators()
-   print("validators=",validators, type(validators))
+#   print("validators=",validators, type(validators))
    fpa.stats2CSV(stats,"stats.csv", outcomes,validators)
-
+   print("fpa.options", fpa.getOptions())
    workbook.close()
    
 if __name__ == "__main__" :
