@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-14T12:47:17-0400"
+__version__ = "FPA.py 2016-05-15T15:19:33-0400"
 
 import json
 import xlsxwriter
@@ -73,9 +73,8 @@ class FPA:
       self.optionsList.append(outcome_colors)
       self.optionsList.append(origin1)
       self.optionsList.append(origin2)
-      a = ['workbook', workbook, 'outcomeNames',outcomes,'dataFileName',dataFileName,'worksheet', worksheet,'outcomeColorDict', outcome_colors,'origin1',origin1,'origin2',origin2,'validatorNames',validators]
+      a = ['workbook', workbook, 'outcomes',outcomes,'dataFileName',dataFileName,'worksheet', worksheet,'outcome_colors', outcome_colors,'origin1',origin1,'origin2',origin2,'validators',validators]
       self.options = {item : a[index+1] for index, item in enumerate(a) if index % 2 == 0}
-     # self.options['outcomeColorsDict'][outcome_colors]
       thing = self.options
       print("thing=",thing, "type=", type(thing))
       self.workbook = workbook
