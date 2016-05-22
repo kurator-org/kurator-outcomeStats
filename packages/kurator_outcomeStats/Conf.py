@@ -14,9 +14,13 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "Conf.py 2016-05-13T14:03:52-0400"
+__version__ = "Conf.py 2016-05-20T22:15:26-0400"
 import xlsxwriter
-import configparser
+import ConfigParser
+import ast
+#import yaml
+import xlsxwriter
+from ConfigParser import SafeConfigParser
 import ast
 import yaml
 class Conf :
@@ -42,42 +46,22 @@ class Conf :
         self.typography=self.workbook.add_format({'bold': True})
 
 
-    def getValidators(self): #should return a tuple of validator names
-        return self.validators
-
-    def getOutcomes(self): #should return a tuple of outcome names
-        return self.outcomes
-
-    
-    def getOutcomeColors(self): #should return an OrderedDictionary with keys from outcome names and values integers representing colors from RGB color model expressed as html RGB strings, e.g. '#00FF00'
-        return self.outcome_colors
-
-    def getWorkbook(self): #name or object? do we care which?  #full pathname or local?
-        return(self.workbook)
-    def getWorkbookName(self): #name or object? do we care which?  #full pathname or local?
-        return(self.workbookName)
-    
-    def getWorksheet(self):
-        return(self.worksheet)
-
-    def getDataFileName(self):
-        return(self.dataFileName)
-
 def main():
-    import pprint
-    import xlsxwriter
+    import ConfigParser
     print ("main")
-    configFile = 'stats.ini'
-    config = Conf(configFile)
+    parser = ConfigParser.ConfigParser()
+    print (parser)
+    rx = parser.read('./stats.ini')
+    print  ("rx=",rx)
+#    configFile = 'stats.ini'
+#    config = Conf(configFile)
+#    sx = config.sections()
+    sx = parser.get('DEFAULT',  'origin1')
+    print ("sx=",sx)
+    #print (config.options('DEFAULT'))
+    
     
 
-
-    origin1 = [0,0]
-    origin2 = [5,0]
-    print(configFile, config.getWorkbook(),config.getWorksheet())
-    print("validators=",config.getValidators())
-    print("outcomes=",config.getOutcomes())
-    print("outcome_colors=", config.getOutcomeColors())
 
 if __name__ == "__main__" :
    main()

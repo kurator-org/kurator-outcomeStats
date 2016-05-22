@@ -253,7 +253,7 @@ class FPA:
              
    
    
-def main():
+def main2():
    """Example"""
    from Conf import Conf
    import pprint
@@ -287,6 +287,9 @@ def main():
    fpa.stats2CSV(stats,"stats.csv", outcomes,validators)
    print("fpa.options", fpa.getOptions())
    workbook.close()
+
+def main():
+   import FPA_Setup
    
 if __name__ == "__main__" :
    main()
