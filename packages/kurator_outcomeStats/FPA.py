@@ -14,14 +14,14 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-16T19:20:21-0400"
+__version__ = "FPA.py 2016-05-22T18:14:56-0400"
 
 import json
 import xlsxwriter
 
-class FPA_options:
-   def __init__(self,options):
-      print("FPA_options:")
+#class FPA_options:
+#   def __init__(self,options):
+#      print("FPA_options:")
       
    
 class FPA:
@@ -289,8 +289,32 @@ def main2():
    workbook.close()
 
 def main():
-   import FPA_Setup
+   from Options import  Options
+   options = Options('./stats.ini')
+#   parser = options.getParser()
+   dataFileName = options.getDataFileName() #input data from Kurator output
+   outcome_colors = options.getOutcomeColors()
+   outcomes = options.getOutcomes()
+   validators = options.getValidators()
+   workbook = options.getWorkbook() #Options package manages this and worksheet
+   worksheet = options.getWorksheet()
+   origin1 = options.getOrigin1()
+   origin2 = options.getOrigin2()
+
+   fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
    
+   formats = fpa.getFormats()
+   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
+   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors)
+   stats2=fpa.normalizeStats(stats, fpa.getNumRecords())
+   cell_numeric_format = '0.00' 
+   fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors, cell_numeric_format)
+   validators=fpa.getValidators()
+#   print("validators=",validators, type(validators))
+   fpa.stats2CSV(stats,"stats.csv", outcomes,validators)
+   print("fpa.options", fpa.getOptions())
+   workbook.close()
+#workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2   
 if __name__ == "__main__" :
    main()
    print("version=", __version__)
