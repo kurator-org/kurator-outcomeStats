@@ -14,9 +14,9 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "Options.py 2016-05-22T18:14:56-0400"
+__version__ = "Options.py 2016-05-25T17:24:14-0400"
 import xlsxwriter
-import ConfigParser
+#import ConfigParser
 import ast
 #import yaml
 import xlsxwriter
@@ -48,6 +48,7 @@ class Options :
         self.typography=self.workbook.add_format({'bold': True})
         self.origin1 = ast.literal_eval(self.parser.get('DEFAULT', 'origin1'))
         self.origin2 = ast.literal_eval(self.parser.get('DEFAULT', 'origin2'))
+        self.cell_numeric_format = ast.literal_eval(self.parser.get('DEFAULT', 'cell_numeric_format'))
 
     def getParser(self):
         return self.parser
@@ -80,6 +81,10 @@ class Options :
         return self.origin1
     def getOrigin2(self):
         return self.origin2
+
+    def getCellNumericFormat(self):
+        return self.cell_numeric_format
+
 def main():
     options = Options('./stats.ini')
     parser = options.getParser()
