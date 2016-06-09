@@ -23,7 +23,7 @@ import logging
 from dwca_utils import response
 from dwca_utils import setup_actor_logging
 
-def FPA1(options):
+def FPA(options):
    """Build options to prepare for instance of class FPA
    options - a dictionary of parameters
       outputfile - - name of xlsx workbook file
@@ -77,7 +77,7 @@ def FPA1(options):
    if outputfile is None or len(outputfile)==0:
       outputfile='qcstats.xlsx'
         
-   print("In FPA1")
+   print("In FPA")
    
 def _getoptions():
     """Parse command line options and return them."""
@@ -109,7 +109,7 @@ def main():
 
    if options.inputfile is None or len(options.inputfile)==0:
       s = 'Xsyntax:\n'
-      s += 'python FPA1.py'
+      s += 'python FPA.py'
       s += ' -w ./workspace'
       s += ' -l DEBUG'
       print '%s' % s
@@ -123,7 +123,7 @@ def main():
    optdict['outcomes'] = options.outcomes
    print 'optdict: %s' % optdict
 
-   response = FPA1(optdict)
+   response = FPA(optdict)
    print '\nresponse: %s' % response
    return
 
