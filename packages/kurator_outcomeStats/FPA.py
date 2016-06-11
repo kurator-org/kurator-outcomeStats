@@ -14,17 +14,19 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA.py 2016-05-28T17:38:34-0400"
+__version__ = "FPA 2016-06-10T19:34:44-0400"
 
 import json
 import xlsxwriter
+#from OPT import OPT
 import argparse
 import logging
 from dwca_utils import response
 from dwca_utils import setup_actor_logging
 
+
 def FPA(options):
-   """Build options to prepare for instance of class FPA
+   """Build options to prepare 
    options - a dictionary of parameters
       outputfile - - name of xlsx workbook file
       worksheetName - optional name of worksheet in output file
@@ -78,7 +80,7 @@ def FPA(options):
       outputfile='qcstats.xlsx'
         
    print("In FPA")
-   
+
 def _getoptions():
     """Parse command line options and return them."""
     parser = argparse.ArgumentParser()
@@ -102,8 +104,210 @@ def _getoptions():
     
     return parser.parse_args()
    
+   
+##   def getOpt(self):
+##      return(self.opt)
+   
+
+#   def f3(opt.get('workbook'), opt.get('worksheet'), opt.get('dataFileName'), opt.get('validators'), opt.get('outcomes'), opt.get('outcome_colors'), opt.get('origin1',default=None), opt.get('origin2',default=None))
+
+def __init4__(self, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2):
+   self.optionsList = list({workbook,worksheet, dataFileName, validators, outcomes})#, outcome_colors, origin1, origin2}
+   self.optionsList.append(outcome_colors)
+   self.optionsList.append(origin1)
+   self.optionsList.append(origin2)
+   a = ['workbook', workbook, 'outcomes',outcomes,'dataFileName',dataFileName,'worksheet', worksheet,'outcome_colors', outcome_colors,'origin1',origin1,'origin2',origin2,'validators',validators]
+   self.options = {item : a[index+1] for index, item in enumerate(a) if index % 2 == 0}
+   thing = self.options
+#   print("thing=",thing, "type=", type(thing))
+   self.workbook = workbook
+   self.dataFileName = dataFileName
+   self.validators = validators
+   self.origin1 = origin1
+   self.origin2 = origin2
+   self.outcome_colors = outcome_colors # a dict
+   self.outcomes = outcomes
+   with open(self.dataFileName) as data_file:   ############## could be a stream???
+      self.data= self.fpAkkaOutput=json.load(data_file)
+
+      self.formats= {}
+      for outcome, color in self.outcome_colors.items():
+         self.formats[outcome] =self.workbook.add_format()
+         format = workbook.add_format()
+
+      self.maxlength= max(len(s) for s in self.validators)
+      self.max1= max(len(s) for s in self.validators)
+      self.max2= max(len(t) for t in self.outcomes)
+      self.maxlength = max(self.max1,self.max2)
+
+      self.stats ={}
+      for outcome in self.outcomes:
+         self.stats[outcome] = 0
+      self.numRecords = len(self.fpAkkaOutput)
+
+   def getOptions(self):
+      return self.options
+   
+   def normalizeStats(self, stats, norm):
+      """ divide every outcome value by norm and return a new stats object. """
+      import copy
+      statsNormed = copy.deepcopy(stats)
+      for validator,stat in statsNormed.items():
+         for outcome, value in stat.items():
+            valueNew = value/norm
+            stat[outcome] = valueNew
+      return statsNormed
+
+   def stats2XLSX(self, workbook, worksheet, formats, origin, outcomes, validators):  #to do: are multiple calls OK?
+      """
+      Function produces a stats dictionary whose keys are validator names and whose values are dictionaries that,
+         in turn have keys that are outcome names and values are a number that is a statistic for the given outcome.
+      Although the returned stats object has the statistic data filled in, it is NOT written to the worksheet. That can be done by the setCells(...) function
+      
+         An example is shown in setCells(...)
+      """
+      bold = workbook.add_format({'bold': True}) #for col headers
+      wrap = workbook.add_format()
+      wrap.set_text_wrap()
+ #     header_format = {'bold': True, 'text_wrap':True}
+      header_format= wrap
+         #Set col headers
+      worksheet.write(origin[0],origin[1],"Validator",bold) 
+      for outcome in outcomes:
+         col=1+origin[1]+outcomes.index(outcome) #insure order is as in outcomes list
+#         worksheet.write(origin[0],col, outcome, bold) #write col header
+#         print("wrap=",wrap)
+         colWidth = len(outcome)*2   #heuristic compromise
+#         worksheet.set_column(origin[0],col, colWidth)
+#         worksheet.set_column(origin[0],col,10,wrap)
+#         worksheet.set_column(origin[0],col,wrap)
+         worksheet.set_column('B:F', 10, wrap) #TODO locate by origin, replace "10" by param
+         bold.set_text_wrap() #do both bold and textwrap formats
+         worksheet.write(origin[0],col, outcome, bold) #write col header
+
+
+         #Set row headers from validator names
+      for k in validators:
+         row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
+         worksheet.write(row,0,k) #write validator name
+
+         #get sizes for column width TODO: get the column where the actual placment will be
+      self.max1 =      max(len(s) for s in self.validators)
+#      self.maxlength = max(len(s) for s in self.validators)
+      worksheet.set_column('A:A', self.max1)
+      self.maxlength = self.max1
+      self.max2 = max(len(t) for t in self.outcomes)
+      self.maxlength =  max(self.max1,self.max2)
+      
+         #initialize stats for accumulation over records
+      numRows = len(self.validators)
+      numCols = len(self.outcomes)
+      stats = [[0.0 for x in range(numCols)] for y in range(numRows)]
+      row = 1
+      col = 1
+
+      ###fill stats from FPA object
+      self.fpa = self.data
+      validatorStats = self.initValidatorStats(self.validators, self.getOutcomes())
+      for record in range(len(self.fpa)):
+         validatorStats = self.updateValidatorStats(self.fpa, validatorStats, record)
+      return validatorStats
+      
+   def setCells(self, workbook, worksheet, stats, origin, validators, outcomes, outcome_colors,format, normalize):
+      """
+         stats is a dictionary with validator names as keys and dictionaries as values. The value dictionaries
+            have outcomes as keys and a number as value; when normalize = False, that number is an integer 
+            that is the number of records having the given outcome for the given validator.
+            
+         cell colors are set from outcome_colors
+         
+         excel numeric formats are hard coded here as either '0.000' if normalize = True or else default,
+            which is normally as an integer.  Possibly the numeric format should be an argument
+
+         NOTE: subsequent worksheet.write(...) can change the worksheet
+      """
+#      self.normalize = normalize
+#      thing = numeric_format
+      self.normalize = normalize
+#      thing = numeric_format
+#      print(thing)
+#      print("in setCells thing=",thing, "type=", type(thing))
+
+#      self.numeric_format = numeric_format
+      for k, v in stats.items():
+         row = 1+origin[0]+validators.index(k) #put rows in order of the validators list
+         worksheet.write(row,0,k) #write validator name
+
+         #write data for each validator in its own row
+         if self.normalize == False:
+            numeric_format = '0' #only ints
+         else:
+            numeric_format = '0.00%'
+         for outcome, statval in v.items():
+            col=1+outcomes.index(outcome) #put cols in order of the outcomes list
+            format= workbook.add_format({'bg_color': outcome_colors[outcome], 'num_format':numeric_format })
+            stat = statval
+            worksheet.write(row, col, stat, format) #set appropriate cell with value stat 
+
+   def getStats(self) :
+      return self.stats
+   def getOutcomes(self) :
+      return self.outcomes
+   def getValidators(self) :
+      return self.validators
+   def getMaxLength(self):
+      return self.maxlength
+   def getOutcomeColors(self) :
+      return self.outcome_colors
+   def getNumRecords(self):
+      return self.numRecords
+   def getFormats(self):
+      return self.formats
+   def getWorkbook(self):
+      return self.workbook
+   
+   def initStats(self,outcomes) :  #to do: insure only called once at FPA instantiation 
+      stats = {}
+      for outcome in outcomes:
+          stats[outcome] = float(0)
+      return stats
+   
+   def initValidatorStats(self,validators, outcomes) :  #to do: insure only called once at FPA instantiation 
+      stats = {}
+      for v in validators :
+         stats[v] = self.initStats(outcomes)
+      return stats
+   
+   def updateValidatorStats(self,fpa, stats, record)  :
+      data=fpa[record]["Markers"]
+      for data_k, data_v in data.items() :
+         for stats_k, stats_v in stats.items() :
+            if (stats_k == data_k):
+               stats[stats_k][data_v] += 1.0
+      return stats
+   
+   def stats2CSV(self, stats, outfile, outcomes, validators): #BUG: requires a complete stats object
+      """
+      This function assumes that the stats dictionary has meaningful and complete statistics. But in
+      turn that may only happen i, e.g., FPA.stats2XLSX() has run and then stats produced by FPA.getStats()
+      """
+      import csv
+      import copy
+      with open(outfile, 'w') as csvfile:
+#         o=copy.deepcopy(outcomes)
+         o = list(outcomes)
+         o.insert(0,"Validator")
+         fieldnames=tuple(o)
+         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+         writer.writeheader()
+         for v in validators:
+            row = stats[v]
+            row['Validator'] = v
+            writer.writerow(row)
+   
+
+   
 def main():
-  # print 'starting main'
    options = _getoptions()
    optdict = {}
 
@@ -127,5 +331,48 @@ def main():
    print '\nresponse: %s' % response
    return
 
-if __name__ == '__main__':
-    main()    
+
+
+   """Example"""
+#   from OPT import OPT
+ ###  from FPA import FPA
+###   import pprint
+###   import xlsxwriter
+
+   configFile = 'stats.ini'
+###   opt = OPT(configFile)
+   #here get the options
+#   fpa = FPA(workbook, workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
+###   fpa = FPA(opt)
+   origin1 = [0,0]
+   origin2 = [5,0]
+
+##   workbook = fpa.getWorkbook()
+##   worksheet = fpa.getWorksheet()
+##   dataFileName = opt.getDataFileName()
+  # print("dataFileName=", dataFileName())
+##   validators = opt.getValidators()
+   
+
+###   outcomes = opt.getOutcomes()
+###   outcome_colors = opt.getOutcomeColors()
+
+###   fpa = FPA(workbook, worksheet,dataFileName, validators, outcomes, outcome_colors, origin1, origin2)
+   
+###   formats = fpa.getFormats()
+###   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
+###   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors)
+  # stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
+###   stats2=fpa.normalizeStats(stats, fpa.getNumRecords())
+###   cell_numeric_format = '0.00' 
+###   fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors, cell_numeric_format)
+###   validators=fpa.getValidators()
+###   print("validators=",validators, type(validators))
+###   fpa.stats2CSV(stats,"stats.csv", outcomes,validators)
+
+###   workbook.close()
+
+if __name__ == "__main__" :
+   main()
+   print("version=", __version__)
+
