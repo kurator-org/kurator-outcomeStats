@@ -14,7 +14,7 @@
 
 __author__ = "Robert A. Morris"
 __copyright__ = "Copyright 2016 President and Fellows of Harvard College"
-__version__ = "FPA 2016-06-10T19:34:44-0400"
+__version__ = "FPA 2016-06-11T12:23:26-0400"
 
 import json
 import xlsxwriter
@@ -86,7 +86,7 @@ def _getoptions():
     parser = argparse.ArgumentParser()
 
     help = 'Name  of the file from which to read QC records (required)'
-    parser.add_argument("-r", "--inputfile", help=help)
+    parser.add_argument("-i", "--inputfile", help=help)
 
     help = 'directory for the output file (optional)'
     parser.add_argument("-w", "--workspace", help=help)
@@ -312,24 +312,28 @@ def main():
    optdict = {}
 
    if options.inputfile is None or len(options.inputfile)==0:
-      s = 'Xsyntax:\n'
+      s = 'syntax:\n'
       s += 'python FPA.py'
+      s += ' -i ./data/occurrence_qc.json'
+      s += ' -o ./data/outcomeStats.xlsx'
+      s += ' -ws .qc_stats'
+      s += ' -oc outcomes'
       s += ' -w ./workspace'
       s += ' -l DEBUG'
       print '%s' % s
-#      return
+      return
 
    optdict['inputfile'] = options.inputfile
-   optdict['workspace'] = options.workspace
-   optdict['worksheetname'] = options.worksheetname
    optdict['outputfile'] = options.outputfile
-   optdict['loglevel'] = options.loglevel
+   optdict['worksheetname'] = options.worksheetname
    optdict['outcomes'] = options.outcomes
+   optdict['workspace'] = options.workspace
+   optdict['loglevel'] = options.loglevel
    print 'optdict: %s' % optdict
 
    response = FPA(optdict)
    print '\nresponse: %s' % response
-   return
+  #### return
 
 
 
@@ -362,7 +366,8 @@ def main():
 ###   formats = fpa.getFormats()
 ###   stats=fpa.stats2XLSX(workbook, worksheet, formats, origin1, outcomes, validators)
 ###   fpa.setCells(workbook, worksheet, stats, origin1, validators, outcomes, outcome_colors)
-  # stats=fpa.stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
+####   stats=stats2XLSX(workbook, worksheet, formats, origin2, outcomes, validators)
+####   print ("stats=",stats)
 ###   stats2=fpa.normalizeStats(stats, fpa.getNumRecords())
 ###   cell_numeric_format = '0.00' 
 ###   fpa.setCells(workbook, worksheet, stats2, origin2, validators, outcomes, outcome_colors, cell_numeric_format)
