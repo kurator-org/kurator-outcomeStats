@@ -18,7 +18,7 @@ import argparse
 #args = parser.parse_args()
 #outfile = args.o
 #args = parser.parse_args()
-#args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
+args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
 #Supply your favorite JSON output of FP-Akka as input. Do python3 statstest.py --help for help
 #tested against FP-Akka 1.5.2 JSON output with python3
 if __name__=="__main__":
