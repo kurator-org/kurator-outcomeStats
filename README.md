@@ -21,7 +21,7 @@ In kurator-outcomeStats/org/kurator/outcomestats
 
 To execute test
 ```
-python3 statstest.py
+python statstest.py
 ```
 
 
