@@ -40,15 +40,25 @@ args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
 #Supply your favorite JSON output of FP-Akka as input. Do python3 statstest.py --help for help
 #tested against FP-Akka 1.5.2 JSON output with python3
 if __name__=="__main__":
+   
+   ###################################################
+   ############# First initialize resources ##########
+   ###################################################
+   # set input jason file from  FPAkka or elsewhere
+   # set output xlsx file
+   # set stats.ini configurations
    args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
+
+   #load entire jason file. (Note: syntactically it is a Dictionary !!! )
    with open(args.getInfile()) as data_file:
          fpAkkaOutput=json.load(data_file)
-   normalized = True
-   origin1 = [0,0]
-   origin2 = [5,0]
+
+   ###### In this test, both normalized and non-normalized statistics are shown
+   origin1 = [0,0]   #Validator names, from which cell addr set below has names for non-normalized data
+   origin2 = [5,0]   #Validator names, from which cell addr set below has names for non-normalized data
    outfile = args.getOutfile()
-   workbook = xlsxwriter.Workbook(outfile)
-   worksheet = workbook.add_worksheet()
+   workbook = xlsxwriter.Workbook(outfile) #xlsxwriter model of an xlsx spreadsheet
+   worksheet = workbook.add_worksheet()    #should supply worksheet name, else defaults
    configFile= 'stats.ini'
 #   stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
    stats = OutcomeStats(workbook,worksheet,args,origin1,origin2)
@@ -56,10 +66,18 @@ if __name__=="__main__":
 #   print(stats.getOutcomes())
    outcomeFormats = OutcomeFormats({})
    formats = outcomeFormats.initFormats(workbook) #shouldn't be attr of main class
+   ###################################################
+   #####createStats and stats2XLSX comprise the main #
+   # processor filling the spreadheet cells       ####
+   ###################################################
+   #if stats are normalized, results are divided by number of records
+   #otherwise, cells show total of the number of each outcome in the appropriate column
+   normalized = True
    validatorStats =           stats.createStats(fpAkkaOutput, ~normalized)
    validatorStatsNormalized = stats.createStats(fpAkkaOutput, normalized)
+
    outcomes = stats.getOutcomes()
-   print("outcomes=", outcomes)
+#   print("outcomes=", outcomes)
    validators = stats.getValidators()
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
