@@ -82,3 +82,8 @@ if __name__=="__main__":
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
    workbook.close()
+
+   #### Bye-bye for now
+   import os
+   print "Done with ", __name__, "in ", os.path.abspath(__file__)
+   print "Examine", outfile
