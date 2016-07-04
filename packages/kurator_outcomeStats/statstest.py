@@ -36,7 +36,7 @@ import argparse
 #args = parser.parse_args()
 #outfile = args.o
 #args = parser.parse_args()
-args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
+#args=Args('occurrence_qc.json', 'outcomeStats.xlsx', 'stats.ini')
 #Supply your favorite JSON output of FP-Akka as input. Do python3 statstest.py --help for help
 #tested against FP-Akka 1.5.2 JSON output with python3
 if __name__=="__main__":
@@ -54,13 +54,13 @@ if __name__=="__main__":
          fpAkkaOutput=json.load(data_file)
 
    ###### In this test, both normalized and non-normalized statistics are shown
-   origin1 = [0,0]   #Validator names, from which cell addr set below has names for non-normalized data
-   origin2 = [5,0]   #Validator names, from which cell addr set below has names for non-normalized data
+   origin1 = [0,0]   #Cell in  which col headers begin for non-normalized stats
+   origin2 = [5,0]   ##Cell in  which col headers begin for normalized stats
    outfile = args.getOutfile()
    workbook = xlsxwriter.Workbook(outfile) #xlsxwriter model of an xlsx spreadsheet
    worksheet = workbook.add_worksheet()    #should supply worksheet name, else defaults
    configFile= 'stats.ini'
-#   stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
+
    stats = OutcomeStats(workbook,worksheet,args,origin1,origin2)
    worksheet.set_column(0,len(stats.getOutcomes()), 3+stats.getMaxLength())
 #   print(stats.getOutcomes())
