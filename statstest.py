@@ -61,7 +61,7 @@ if __name__=="__main__":
    worksheet = workbook.add_worksheet()    #should supply worksheet name, else defaults
    configFile= 'stats.ini'
 #   stats = OutcomeStats(workbook,worksheet,data_file,outfile,configFile,origin1,origin2)
-   stats = OutcomeStats(workbook,worksheet,args,origin1,origin2)
+   stats = OutcomeStats(args.getConfigfile())
    worksheet.set_column(0,len(stats.getOutcomes()), 3+stats.getMaxLength())
 #   print(stats.getOutcomes())
    outcomeFormats = OutcomeFormats({})
@@ -81,7 +81,10 @@ if __name__=="__main__":
    validators = stats.getValidators()
    stats.stats2XLSX(workbook, worksheet, formats,validatorStats,origin1, outcomes,validators)
    stats.stats2XLSX(workbook, worksheet, formats,validatorStatsNormalized,origin2, outcomes,validators)
+
    workbook.close()
+
+   stats.stats2CSV(validatorStats, "test.csv", outcomes, validators);
 
    #### Bye-bye for now
    import os

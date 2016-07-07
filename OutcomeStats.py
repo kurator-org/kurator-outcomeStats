@@ -21,14 +21,18 @@ import Args
 
 class OutcomeStats:
 #   def __init__(self, workbook, worksheet,infile, outfile, configFile, origin1, origin2):
-   def __init__(self, workbook, worksheet,args, origin1, origin2):
+   def __init__(self, configfile):
 
-      with open(args.getInfile()) as data_file:
-                 fpAkkOutput=json.load(data_file)
+      #with open(args.getInfile()) as data_file:
+      #           fpAkkOutput=json.load(data_file)
+
+      #with open(args.getInfile()) as data_file:
+      #   self.fpa=json.load(data_file)
+
       config = configparser.ConfigParser()
       config.sections()
 #      self.configFile =configFile
-      self.configFile = args.getConfigfile()
+      self.configFile = configfile
 #      self.configFile='stats.ini'
       config.read(self.configFile)
       self.validators =eval( config['DEFAULT']['validators'])
@@ -37,11 +41,10 @@ class OutcomeStats:
       self.max1= max(len(s) for s in self.validators)
       self.max2= max(len(t) for t in self.outcomes)
       self.maxlength = max(self.max1,self.max2)
-      self.fpa = {}
-      infile = 'occurrence_qc.json' #for now
-      with open(infile) as data_file:
-         self.fpa=json.load(data_file)
-      self.numRecords = len(self.fpa)
+      #self.fpa = {}
+      #infile = 'occurrence_qc.json' #for now
+
+      #self.numRecords = len(self.fpa)
 
    def getOutcomes(self) :
       return self.outcomes
@@ -98,7 +101,7 @@ class OutcomeStats:
    def stats2CSV(self, stats, outfile, outcomes, validators):
       import csv
       with open(outfile, 'w') as csvfile:
-         o=outcomes
+         o=list(outcomes)
          o.insert(0,"Validator")
          fieldnames=tuple(o)
          writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
@@ -147,7 +150,7 @@ def main():
    origin1 = [0,0]
    origin2 = [5,0]
 
-   stats=OutcomeStats(workbook, worksheet,args, origin1, origin2)
+   stats=OutcomeStats(args)
 
 if __name__ == "__main__" :
    print("hello")
